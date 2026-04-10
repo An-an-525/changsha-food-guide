@@ -228,33 +228,93 @@ const getMockScores = (popularity: number, id: string) => {
 };
 
 const getMockTags = (category: string, isSpot: boolean, id: string) => {
-  const hash = parseInt(id.replace(/\D/g, '')) || 0;
   if (isSpot) {
     return [
-      { label: '风景绝佳', count: hash * 3 + 100, positive: true },
-      { label: '必打卡', count: hash * 2 + 50, positive: true },
-      { label: '人太多了', count: hash + 20, positive: false }
+      { label: '出片圣地', count: 1205, positive: true },
+      { label: '历史底蕴', count: 890, positive: true },
+      { label: '周末好去处', count: 640, positive: true },
+      { label: '人挤人', count: 320, positive: false },
+      { label: '停车困难', count: 150, positive: false }
     ];
   }
-  return [
-    { label: '味道赞', count: hash * 5 + 100, positive: true },
-    { label: '肉质鲜嫩', count: hash * 3 + 50, positive: true },
-    { label: '回头客多', count: hash * 2 + 50, positive: true },
-    { label: '排队太久', count: hash * 4 + 100, positive: false },
-    { label: '环境一般', count: hash + 10, positive: false }
-  ];
+  
+  const tagPools: Record<string, any[]> = {
+    '湘菜': [
+      { label: '正宗湘味', count: 2305, positive: true },
+      { label: '极其下饭', count: 1890, positive: true },
+      { label: '锅气十足', count: 1540, positive: true },
+      { label: '辣到流泪', count: 890, positive: true },
+      { label: '排队太久', count: 650, positive: false }
+    ],
+    '粉面': [
+      { label: '码子分量足', count: 1500, positive: true },
+      { label: '原汤鲜美', count: 1200, positive: true },
+      { label: '老口子最爱', count: 980, positive: true },
+      { label: '环境拥挤', count: 450, positive: false }
+    ],
+    '夜市/龙虾': [
+      { label: '虾肉Q弹', count: 3200, positive: true },
+      { label: '夜宵首选', count: 2800, positive: true },
+      { label: '口味重', count: 1500, positive: true },
+      { label: '价格偏贵', count: 900, positive: false }
+    ],
+    '小吃': [
+      { label: '外酥里嫩', count: 2100, positive: true },
+      { label: '边走边吃', count: 1800, positive: true },
+      { label: '童年味道', count: 1200, positive: true },
+      { label: '全是碳水', count: 600, positive: false }
+    ],
+    '饮品': [
+      { label: '解腻神器', count: 3500, positive: true },
+      { label: '包装精美', count: 2100, positive: true },
+      { label: '奶底醇厚', count: 1800, positive: true },
+      { label: '冰块太多', count: 700, positive: false }
+    ]
+  };
+
+  const tags = tagPools[category] || tagPools['湘菜'];
+  const hash = parseInt(id.replace(/\D/g, '')) || 0;
+  // Shuffle slightly based on id
+  return [...tags].sort(() => 0.5 - (hash % 10) / 10).map(t => ({
+    ...t,
+    count: t.count + (hash * 13 % 100)
+  }));
 };
 
-const getMockDeals = (priceRange: string, id: string) => {
+const getMockDeals = (priceRange: string, id: string, category: string) => {
   const basePrice = parseInt(priceRange.replace(/\D/g, '')) || 50;
   const hash = parseInt(id.replace(/\D/g, '')) || 0;
+  
+  const dealNames: Record<string, string[]> = {
+    '湘菜': ['招牌辣椒炒肉双人餐', '经典剁椒鱼头3-4人餐', '下饭神菜特惠单人餐'],
+    '粉面': ['豪华全家福拌粉套餐', '招牌原汤肉丝粉+卤蛋', '双人招牌粉面套餐'],
+    '夜市/龙虾': ['精品口味虾3斤装', '蒜蓉小龙虾双人夜宵套餐', '口味蟹+卤味拼盘套餐'],
+    '烧烤': ['烈火牛肉单人撸串套餐', '豪华烧烤欢聚双人餐', '招牌牛油+五花肉套餐'],
+    '小吃': ['经典臭豆腐+大香肠组合', '招牌糖油粑粑双人份', '人气小吃大满贯'],
+    '饮品': ['招牌鲜奶茶双杯特惠', '大杯水果茶单人券', '下午茶饮品+甜点套餐']
+  };
+  
+  const names = dealNames[category] || dealNames['湘菜'];
+  const name1 = names[hash % names.length];
+  const name2 = '100元全场通用代金券';
+  
   return [
-    { id: uuidv4(), title: '双人特惠招牌套餐', price: Math.floor(basePrice * 1.8), originalPrice: Math.floor(basePrice * 2.5), sold: hash * 50 + 500, type: '套餐' },
-    { id: uuidv4(), title: '100元代金券', price: 88, originalPrice: 100, sold: hash * 100 + 1000, type: '代金券' }
+    { id: uuidv4(), title: name1, price: Math.floor(basePrice * 1.5), originalPrice: Math.floor(basePrice * 2.2), sold: (hash * 17 % 500) + 300, type: '套餐' },
+    { id: uuidv4(), title: name2, price: 88, originalPrice: 100, sold: (hash * 23 % 1000) + 500, type: '代金券' }
   ];
 };
 
-const getAddress = (area: string, id: string) => {
+const getAddress = (area: string, id: string, name: string) => {
+  // Use exact real-world mapping for famous places based on our search results
+  if (name.includes('笨萝卜') && name.includes('太平街')) return '天心区太平老街与黄兴中路交叉口(育英街店)';
+  if (name.includes('天宝兄弟')) return '天心区芙蓉中路二段116号众东国际一楼';
+  if (name.includes('费大厨') && name.includes('中心')) return '天心区黄兴南路步行商业街中心广场西北角';
+  if (name.includes('公交新村粉店') && name.includes('总店')) return '雨花区曙光中路与赤岗巷交叉口(公交新村公交站旁)';
+  if (name.includes('茶颜悦色') && name.includes('太平街')) return '天心区太平老街111号';
+  if (name.includes('文和友')) return '天心区湘江中路36号海信广场外区';
+  if (name.includes('橘子洲头')) return '岳麓区橘子洲头2号';
+  if (name.includes('湖南博物院')) return '开福区东风路50号';
+
   const hash = parseInt(id.replace(/\D/g, '')) || 0;
   const num = (hash * 13) % 200 + 1;
   const mappings: Record<string, string> = {
@@ -290,7 +350,7 @@ export const staticMockPlaces: Place[] = [
     type: 'restaurant' as const,
     category: r[2],
     priceRange: r[3],
-    location: { address: getAddress(r[4], r[0]), area: r[4] },
+    location: { address: getAddress(r[4], r[0], r[1]), area: r[4] },
     studentFriendly: r[5],
     popularity: r[6],
     costPerformance: r[7],
@@ -301,7 +361,7 @@ export const staticMockPlaces: Place[] = [
     publishDate: '2023-11-01',
     scores: getMockScores(r[6] as number, r[0]),
     tags: getMockTags(r[2] as string, false, r[0]),
-    deals: getMockDeals(r[3] as string, r[0])
+    deals: getMockDeals(r[3] as string, r[0], r[2] as string)
   })),
   ...rawSpots.map((s) => ({
     id: s[0],
@@ -309,7 +369,7 @@ export const staticMockPlaces: Place[] = [
     type: 'spot' as const,
     category: s[2],
     priceRange: s[3],
-    location: { address: getAddress(s[4] as string, s[0] as string), area: s[4] },
+    location: { address: getAddress(s[4] as string, s[0] as string, s[1] as string), area: s[4] },
     studentFriendly: s[5],
     popularity: s[6],
     costPerformance: s[7],
@@ -341,6 +401,27 @@ export const getMergedPlaces = (): Place[] => {
 export const mockReviews: Review[] = staticMockPlaces.map((p, i) => {
   const rating = p.costPerformance > 4.5 ? 5 : (p.costPerformance > 4.0 ? 4 : 3);
   const hash = parseInt(p.id.replace(/\D/g, '')) || 0;
+  
+  const getReviewContent = () => {
+    if (p.type === 'spot') {
+      const spotTemplates = [
+        `周末和朋友来${p.name}逛了逛，${p.shortReview.pros}。不过有一说一，${p.shortReview.cons}。总体来说还是值得一来，记得穿双舒服的鞋子！`,
+        `终于打卡了心心念念的${p.name}！景色确实没得说，${p.shortReview.pros}，随手一拍都很出片。美中不足的是${p.shortReview.cons}，建议大家错峰出行。`,
+        `${p.name}真的太好看了！${p.shortReview.pros}，体验感直接拉满。唯一需要吐槽的就是${p.shortReview.cons}，希望能改进一下。下次还会带家人来玩。`
+      ];
+      return spotTemplates[hash % spotTemplates.length];
+    }
+    
+    const foodTemplates = [
+      `今天特意来打卡${p.name}，真的是名不虚传！${p.shortReview.pros}，吃得停不下来。不过确实${p.shortReview.cons}，如果是为了吃顿便饭可能要考虑一下时间成本。`,
+      `本地土著强推的一家店！${p.shortReview.pros}，性价比真的很高。但是${p.shortReview.cons}，介意环境的姐妹慎冲。总的来说，为了这口味道，值得！`,
+      `终于吃到了传说中的${p.name}！菜品盲点不踩雷，${p.shortReview.pros}。美中不足的是${p.shortReview.cons}。建议大家早点去，不然真的要等很久。`,
+      `跟风来尝尝${p.name}，说实话口味是不错的，${p.shortReview.pros}。就是${p.shortReview.cons}，体验感打了一点折扣。整体给个${rating}星吧，可以一试。`,
+      `这家店真的是我的宝藏食堂了！${p.shortReview.pros}，每次带朋友来吃都说好。虽然${p.shortReview.cons}，但瑕不掩瑜，强烈推荐给大家！`
+    ];
+    return foodTemplates[hash % foodTemplates.length];
+  };
+
   return {
     id: `rev${i}`,
     restaurantId: p.id,
@@ -350,7 +431,7 @@ export const mockReviews: Review[] = staticMockPlaces.map((p, i) => {
     rating: rating,
     pros: p.shortReview.pros,
     cons: p.shortReview.cons,
-    content: `慕名而来打卡${p.name}。优点很明显，${p.shortReview.pros}；但是也有不足之处：${p.shortReview.cons}。整体而言性价比得分为${p.costPerformance}分，大家可以根据自己的需求参考。服务态度还可以，环境和卫生也算干净，算是这个价位里不错的选择了！`,
+    content: getReviewContent(),
     images: p.images.slice(0, 2)
   };
 });
