@@ -28,10 +28,12 @@ export function Home() {
     <div className="flex flex-col bg-cream">
       {/* Hero Section */}
       <section className="relative h-[85vh] flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 z-0 bg-dark">
           <img 
-            src="https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&q=80&w=2000" 
+            src="https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&q=60&w=1200" 
             alt="Changsha Food"
+            loading="eager"
+            fetchPriority="high"
             className="w-full h-full object-cover brightness-[0.4] scale-105 transform transition-transform duration-[20s] hover:scale-100"
           />
         </div>
@@ -142,6 +144,8 @@ function TimelineNode({ node, index }: { node: any; index: number }) {
           <img 
             src={place.images[0]} 
             alt={place.name}
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-dark/80 via-dark/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity"></div>

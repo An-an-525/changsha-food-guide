@@ -145,6 +145,8 @@ export function Map() {
                       <img 
                         src={place.images[0]} 
                         alt={place.name} 
+                        loading="lazy"
+                        decoding="async"
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                       <div className="absolute top-2 right-2 bg-white/90 backdrop-blur px-2 py-1 text-xs text-dark font-medium">

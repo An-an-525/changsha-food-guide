@@ -160,6 +160,8 @@ export function Search() {
                           <img 
                             src={place.images[0]} 
                             alt={place.name} 
+                            loading="lazy"
+                            decoding="async"
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                           />
                           {/* Price Badge */}

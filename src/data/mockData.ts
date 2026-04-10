@@ -105,43 +105,44 @@ const rawSpots: RawRestaurantData[] = [
   ['s3', '湖南博物院', '文化', '免费(需预约)', '东风路50号', true, 97, 5.0, '马王堆汉墓，历史底蕴深厚', '极难预约，一票难求'],
 ];
 
-// 工具函数：根据类别映射不同的图片
+// 工具函数：根据类别映射不同的图片（使用国内访问极快的静态资源或优化后的参数）
+// 将 w=800 改为 w=400，q=80 改为 q=60，大幅减小体积。对于首屏可能依然需要使用更快的图床。
 const getImageUrl = (category: string, id: string) => {
   const images: Record<string, string[]> = {
     '湘菜': [
-      'https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&q=80&w=800',
-      'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=800',
-      'https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?auto=format&fit=crop&q=80&w=800',
-      'https://images.unsplash.com/photo-1617093727343-374698b1b08d?auto=format&fit=crop&q=80&w=800'
+      'https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&q=60&w=400',
+      'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=60&w=400',
+      'https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?auto=format&fit=crop&q=60&w=400',
+      'https://images.unsplash.com/photo-1617093727343-374698b1b08d?auto=format&fit=crop&q=60&w=400'
     ],
     '粉面': [
-      'https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&q=80&w=800',
-      'https://images.unsplash.com/photo-1552611052-33e04de081de?auto=format&fit=crop&q=80&w=800',
-      'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&q=80&w=800'
+      'https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&q=60&w=400',
+      'https://images.unsplash.com/photo-1552611052-33e04de081de?auto=format&fit=crop&q=60&w=400',
+      'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&q=60&w=400'
     ],
     '夜市/龙虾': [
-      'https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&q=80&w=800',
-      'https://images.unsplash.com/photo-1564671165093-20688ff1fffa?auto=format&fit=crop&q=80&w=800'
+      'https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&q=60&w=400',
+      'https://images.unsplash.com/photo-1564671165093-20688ff1fffa?auto=format&fit=crop&q=60&w=400'
     ],
     '夜市/烧烤': [
-      'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&q=80&w=800',
-      'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&q=80&w=800'
+      'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&q=60&w=400',
+      'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&q=60&w=400'
     ],
     '烧烤': [
-      'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&q=80&w=800',
-      'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&q=80&w=800'
+      'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&q=60&w=400',
+      'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&q=60&w=400'
     ],
     '小吃': [
-      'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80&w=800',
-      'https://images.unsplash.com/photo-1541592106381-b31e9677c0e5?auto=format&fit=crop&q=80&w=800',
-      'https://images.unsplash.com/photo-1626804475297-4160aae01beb?auto=format&fit=crop&q=80&w=800'
+      'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=60&w=400',
+      'https://images.unsplash.com/photo-1541592106381-b31e9677c0e5?auto=format&fit=crop&q=60&w=400',
+      'https://images.unsplash.com/photo-1626804475297-4160aae01beb?auto=format&fit=crop&q=60&w=400'
     ],
     '饮品': [
-      'https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&q=80&w=800',
-      'https://images.unsplash.com/photo-1556881286-fc6915169721?auto=format&fit=crop&q=80&w=800'
+      'https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&q=60&w=400',
+      'https://images.unsplash.com/photo-1556881286-fc6915169721?auto=format&fit=crop&q=60&w=400'
     ],
     '甜点': [
-      'https://images.unsplash.com/photo-1483695028939-5bb13f8648b0?auto=format&fit=crop&q=80&w=800'
+      'https://images.unsplash.com/photo-1483695028939-5bb13f8648b0?auto=format&fit=crop&q=60&w=400'
     ]
   };
 
