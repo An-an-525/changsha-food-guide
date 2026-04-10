@@ -38,6 +38,9 @@ export function Search() {
     if (query.trim()) {
       setActiveQuery(query.trim());
       setHasSearched(true);
+    } else {
+      setActiveQuery('长沙'); // Fallback trigger
+      setHasSearched(true);
     }
   };
 

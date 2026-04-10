@@ -42,10 +42,10 @@ export function Footer() {
           <div className="md:col-span-3">
             <h3 className="text-cream text-sm font-bold tracking-widest uppercase mb-6">条款与说明</h3>
             <ul className="space-y-3 text-sm">
-              <li><a href="#" className="hover:text-cream transition-colors">免责声明 (Disclaimer)</a></li>
-              <li><a href="#" className="hover:text-cream transition-colors">隐私政策 (Privacy Policy)</a></li>
-              <li><a href="#" className="hover:text-cream transition-colors">收录申请 (Submit a Place)</a></li>
-              <li><a href="#" className="hover:text-cream transition-colors">关于主理人 (About An)</a></li>
+              <li><button onClick={(e) => { e.preventDefault(); alert('免责声明正在更新中...'); }} className="hover:text-cream transition-colors cursor-pointer text-left">免责声明 (Disclaimer)</button></li>
+              <li><button onClick={(e) => { e.preventDefault(); alert('隐私政策正在更新中...'); }} className="hover:text-cream transition-colors cursor-pointer text-left">隐私政策 (Privacy Policy)</button></li>
+              <li><button onClick={(e) => { e.preventDefault(); alert('请联系主理人邮箱申请收录'); }} className="hover:text-cream transition-colors cursor-pointer text-left">收录申请 (Submit a Place)</button></li>
+              <li><button onClick={(e) => { e.preventDefault(); alert('独立探店主理人：安。我们致力于发掘真实的城市味道。'); }} className="hover:text-cream transition-colors cursor-pointer text-left">关于主理人 (About An)</button></li>
             </ul>
           </div>
         </div>

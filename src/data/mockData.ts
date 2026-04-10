@@ -96,27 +96,50 @@ const rawRestaurants: RawRestaurantData[] = [
   ['r56', '云塘堕落街炒面', '小吃', '¥10/人', '长理云塘周边', true, 89, 4.8, '镬气十足，宵夜之神', '小摊环境，没地方坐'],
   ['r57', '理工奶茶西施', '饮品', '¥12/人', '长理云塘周边', true, 90, 4.6, '纯鲜奶熬制，平价版茶颜悦色', '口味偏甜，建议少糖'],
   ['r58', '东北饺子馆(云塘店)', '面食', '¥20/人', '长理云塘周边', true, 88, 4.8, '纯手工现包，酸菜猪肉馅很地道', '高峰期上菜慢'],
+  ['r59', '夏记粉店', '粉面', '¥15/人', '五一广场', true, 93, 4.8, '肉丸粉汤头鲜美，肉丸劲道', '座位非常拥挤'],
+  ['r60', '刘聋子粉馆', '粉面', '¥20/人', '五一广场', true, 89, 4.5, '常德牛肉粉代表，牛杂入味', '稍微有些油腻'],
+  ['r61', '网吧烤肠', '小吃', '¥8/人', '大学城', true, 85, 4.9, '一口爆汁，外脆里嫩', '只有晚上推车出来'],
+  ['r62', '正宗桂林卤粉', '粉面', '¥15/人', '大学城', true, 90, 4.7, '卤水味道很正，花生米香脆', '粉的量稍微有点少'],
+  ['r63', '杨裕兴(解放西路店)', '粉面', '¥25/人', '五一广场', false, 87, 4.2, '百年老字号，手工面条劲道', '价格偏高，服务冷淡'],
+  ['r64', '双燕楼', '小吃', '¥20/人', '五一广场', true, 88, 4.4, '长沙老牌馄饨，皮薄馅大', '饭点时等位时间长'],
+  ['r65', '李公庙糖油粑粑', '小吃', '¥10/人', '五一广场', true, 95, 4.9, '桂花香气浓郁，外壳酥脆', '每天限量，去晚了买不到'],
+  ['r66', '乔伯凉面', '小吃', '¥15/人', '白沙路', true, 91, 4.6, '花生碎和辣椒油绝配，夏天必吃', '店面难找，环境一般'],
+  ['r67', '旺旺小吃店', '小吃', '¥25/人', '南门口', true, 89, 4.5, '刮凉粉和香干味道很正', '打包带走比较方便'],
+  ['r68', '长郡中学铁板烧', '小吃', '¥15/人', '南门口', true, 94, 4.8, '学生时代的回忆，酱料独特', '只有放学时间开门'],
+  ['r69', '半仙豆夫', '饮品', '¥20/人', '五一广场', true, 86, 4.3, '豆乳茶香浓，黄豆粉麻薯好吃', '喝多容易腻'],
+  ['r70', '果耶', '饮品', '¥18/人', '五一广场', true, 85, 4.5, '鲜榨果汁，用料扎实', '冰块有时加得太多'],
+  ['r71', '汴京炸鸡', '小吃', '¥25/人', '五一广场', true, 90, 4.6, '外皮金黄酥脆，肉质多汁', '热量炸弹，容易长胖'],
+  ['r72', '吴酥生', '甜点', '¥30/人', '五一广场', false, 88, 4.4, '肉松小贝用料大方，蛋糕松软', '保质期短，不宜久放'],
+  ['r73', '罗记臭豆腐', '小吃', '¥15/人', '坡子街', true, 92, 4.7, '老长沙口味，辣椒水很够味', '排队人潮拥挤'],
+  ['r74', '向群锅饺', '小吃', '¥15/人', '坡子街', true, 89, 4.5, '底部煎得焦脆，肉馅鲜美', '刚出锅很烫嘴'],
+  ['r75', '红梅冷饮', '饮品', '¥10/人', '太平街', true, 87, 4.8, '酸梅汤解暑，绿豆沙绵密', '冬天不营业'],
+  ['r76', '胡毛肚', '小吃', '¥35/人', '太平街', true, 91, 4.5, '毛肚脆嫩，红油香辣', '价格在小吃里算贵的'],
+  ['r77', '马复胜', '湘菜', '¥60/人', '五一广场', false, 86, 4.3, '传统湘菜老店，口味地道', '菜品更新慢'],
+  ['r78', '玉楼东', '湘菜', '¥70/人', '五一广场', false, 85, 4.1, '百年名店，麻辣仔鸡招牌', '环境老旧，服务一般'],
+  ['r79', '秦皇食府', '湘菜', '¥85/人', '芙蓉中路', false, 88, 4.0, '环境雅致，适合商务宴请', '价格偏高'],
+  ['r80', '冰火楼', '湘菜', '¥75/人', '芙蓉中路', false, 89, 4.2, '菜品精致，口味适中', '饭点上菜速度慢'],
+  ['r81', '新长福', '湘菜', '¥90/人', '芙蓉中路', false, 90, 4.1, '高端湘菜代表，服务周到', '消费较高，需提前预定'],
+  ['r82', '火宫殿', '湘菜', '¥80/人', '坡子街', false, 93, 3.9, '长沙美食名片，小吃种类全', '游客太多，口味略显商业化'],
+  ['r83', '彭记肉丸店', '湘菜', '¥45/人', '南门口', true, 94, 4.8, '肉丸汤清淡鲜美，性价比高', '店面很小，饭点要等位'],
+  ['r84', '昱龙大盆牛蛙', '湘菜', '¥75/人', '三王街', false, 91, 4.4, '牛蛙分量足，香辣过瘾', '环境嘈杂，辣度偏高'],
+  ['r85', '一盏灯(雨花亭店)', '湘菜', '¥65/人', '雨花区', false, 92, 4.3, '口味正宗，鸭掌筋必点', '辣度非常高'],
+  ['r86', '柳胖子家常菜', '湘菜', '¥55/人', '天心区', true, 88, 4.6, '典型的苍蝇馆子，下饭神器', '卫生条件一般'],
+  ['r87', '天下客', '湘菜', '¥60/人', '开福区', true, 87, 4.5, '家常菜味道好，分量大', '停车不方便'],
+  ['r88', '老街鱼嘴巴', '湘菜', '¥70/人', '芙蓉区', false, 89, 4.4, '鱼嘴巴软糯入味，招牌菜赞', '吃多了有点咸'],
+  ['r89', '费大厨辣椒炒肉(星沙店)', '湘菜', '¥75/人', '长沙县', false, 90, 4.2, '连锁品质稳定，服务好', '高峰期等位时间长'],
+  ['r90', '坛宗剁椒鱼头', '湘菜', '¥85/人', '岳麓区', false, 91, 4.3, '大鱼头很震撼，鱼肉鲜嫩', '价格偏高'],
+  ['r91', '湘水之珠', '湘菜', '¥95/人', '开福区', false, 86, 4.0, '江景餐厅，环境极佳', '菜品性价比一般'],
+  ['r92', '五十七度湘', '湘菜/铁板烧', '¥80/人', '芙蓉区', false, 88, 4.1, '厨师现场炒菜有互动，氛围好', '油烟味重'],
+  ['r93', '南景饭店', '湘菜', '¥100/人', '雨花区', false, 87, 3.9, '老牌高档湘菜，适合请客', '菜式偏传统'],
+  ['r94', '七彩江南', '湘菜', '¥85/人', '天心区', false, 85, 4.0, '环境古色古香，菜品精美', '分量相对较少'],
+  ['r95', '大碗厨', '湘菜', '¥50/人', '岳麓区', true, 89, 4.7, '平价大碗，学生聚餐好去处', '环境比较吵闹'],
+  ['r96', '岭南人家', '湘菜', '¥65/人', '开福区', false, 86, 4.2, '菜品融合了江浙风味，不那么辣', '湘菜特色不突出'],
+  ['r97', '湘江印象', '湘菜', '¥120/人', '天心区', false, 88, 3.8, '一线江景，高端服务', '价格昂贵'],
+  ['r98', '农香情', '湘菜', '¥55/人', '望城区', true, 84, 4.5, '农家乐风味，食材土鲜', '位置偏远'],
+  ['r99', '柴火人家', '湘菜', '¥60/人', '长沙县', true, 85, 4.4, '柴火炖菜，很有乡村风味', '环境比较原生态'],
 ];
 
-// Extend mock data dynamically to simulate 50% coverage of Changsha (generating 50 more places automatically)
-const districts = ['天心区', '芙蓉区', '雨花区', '开福区', '岳麓区', '望城区', '长沙县'];
-const categories = ['湘菜', '粉面', '小吃', '饮品', '夜市/烧烤', '甜点', '日料/韩料', '火锅'];
-for (let i = 59; i <= 120; i++) {
-  const cat = categories[i % categories.length];
-  const isStudent = i % 3 === 0;
-  rawRestaurants.push([
-    `r${i}`,
-    `长沙本地秘藏餐馆 ${i}号店`,
-    cat,
-    `¥${Math.floor(Math.random() * 80 + 20)}/人`,
-    districts[i % districts.length],
-    isStudent,
-    Math.floor(Math.random() * 20 + 70), // 70-90 popularity
-    Math.round((Math.random() * 2 + 3) * 10) / 10, // 3.0 - 5.0 cost perf
-    '本地人强推，口味地道，食材新鲜',
-    '位置稍微有点偏，不太好找停车位'
-  ]);
-}
+// Remaining dynamically added places will now just use the 99 realistic data rows.
 
 const rawSpots: RawRestaurantData[] = [
   ['s1', '橘子洲头', '观光', '免费(观光车¥40)', '橘子洲风景区', true, 99, 5.0, '青年毛泽东雕像，湘江风景极佳', '节假日人从众，需要走很多路'],
@@ -172,6 +195,35 @@ const getImageUrl = (category: string, id: string) => {
   return pool[index];
 };
 
+const getAddress = (area: string, id: string) => {
+  const hash = parseInt(id.replace(/\D/g, '')) || 0;
+  const num = (hash * 13) % 200 + 1;
+  const mappings: Record<string, string> = {
+    '五一广场': `天心区黄兴中路${num}号`,
+    '大学城': `岳麓区麓山南路${num}号`,
+    '四方坪': `开福区双拥路四方坪商贸城${num}栋`,
+    '扬帆夜市': `芙蓉区荷花路扬帆小区${num}号`,
+    '太平街': `天心区太平老街${num}号`,
+    '冬瓜山': `天心区裕南街${num}号`,
+    '天马小区': `岳麓区天马安置小区${num}栋`,
+    '南门口': `天心区城南西路${num}号`,
+    '芙蓉中路': `芙蓉区芙蓉中路二段${num}号`,
+    '湘江风光带': `天心区湘江中路二段${num}号`,
+    '曙光中路': `雨花区曙光中路${num}号`,
+    '长理云塘周边': `天心区万家丽南路二段960号(周边${num}米)`,
+    '橘子洲风景区': `岳麓区橘子洲头2号`,
+    '东风路50号': `开福区东风路50号`,
+    '开福区': `开福区营盘路${num}号`,
+    '岳麓区': `岳麓区银盆南路${num}号`,
+    '天心区': `天心区湘江中路${num}号`,
+    '雨花区': `雨花区万家丽中路${num}号`,
+    '望城区': `望城区雷锋大道${num}号`,
+    '长沙县': `长沙县星沙大道${num}号`,
+    '芙蓉区': `芙蓉区五一大道${num}号`
+  };
+  return mappings[area] || `${area}主干道${num}号`;
+};
+
 export const staticMockPlaces: Place[] = [
   ...rawRestaurants.map((r) => ({
     id: r[0],
@@ -179,7 +231,7 @@ export const staticMockPlaces: Place[] = [
     type: 'restaurant' as const,
     category: r[2],
     priceRange: r[3],
-    location: { address: r[4] + '核心商圈', area: r[4] },
+    location: { address: getAddress(r[4], r[0]), area: r[4] },
     studentFriendly: r[5],
     popularity: r[6],
     costPerformance: r[7],
@@ -195,7 +247,7 @@ export const staticMockPlaces: Place[] = [
     type: 'spot' as const,
     category: s[2],
     priceRange: s[3],
-    location: { address: s[4], area: s[4] },
+    location: { address: getAddress(s[4], s[0]), area: s[4] },
     studentFriendly: s[5],
     popularity: s[6],
     costPerformance: s[7],
@@ -249,13 +301,13 @@ export const getMergedReviews = (placeId: string): Review[] => {
 }
 
 export const mockItinerary = [
-  { id: 'it1', day: 'Saturday', mealTime: 'Breakfast', timeLabel: '08:30', placeId: 'r10', description: '落地长沙，用一碗热气腾腾的公交新村肉丝粉唤醒胃。' },
-  { id: 'it2', day: 'Saturday', mealTime: 'Activity', timeLabel: '10:00', placeId: 's1', description: '吃饱喝足，漫步橘子洲头，感受湘江风光与青年毛泽东雕像的震撼。' },
-  { id: 'it3', day: 'Saturday', mealTime: 'Lunch', timeLabel: '13:00', placeId: 'r1', description: '来到太平老街，排队打卡笨萝卜，体验重油重辣的下饭湘菜。' },
-  { id: 'it4', day: 'Saturday', mealTime: 'Activity', timeLabel: '15:30', placeId: 's3', description: '前往湖南博物院，穿越千年一睹马王堆汉墓的神秘。' },
-  { id: 'it5', day: 'Saturday', mealTime: 'Dinner', timeLabel: '19:00', placeId: 'r15', description: '海信广场文和友，边吃小龙虾边感受80年代的老长沙市井氛围。' },
-  { id: 'it6', day: 'Sunday', mealTime: 'Breakfast', timeLabel: '09:00', placeId: 'r9', description: '坡子街肆姐面粉馆，一碗张艺兴同款肉丝粉，开启新的一天。' },
-  { id: 'it7', day: 'Sunday', mealTime: 'Activity', timeLabel: '10:30', placeId: 's2', description: '登岳麓山，赏爱晚亭红叶，体验刺激的滑道下山。' },
-  { id: 'it8', day: 'Sunday', mealTime: 'Lunch', timeLabel: '14:00', placeId: 'r22', description: '下山后来杯茶颜悦色（可搭配周边小吃），稍作休息。' },
-  { id: 'it9', day: 'Sunday', mealTime: 'Dinner', timeLabel: '18:00', placeId: 'r14', description: '周末收官大餐！天宝兄弟吃顿好的，用顶级口味虾和口味蟹犒劳自己。' }
+  { id: 'it1', day: 'Day 1', mealTime: '早晨', timeLabel: '08:30', placeId: 'r10', description: '用一碗热气腾腾的公交新村肉丝粉唤醒胃，感受星城晨间的烟火气。' },
+  { id: 'it2', day: 'Day 1', mealTime: '漫游', timeLabel: '10:00', placeId: 's1', description: '漫步橘子洲头，感受湘江风光与青年毛泽东雕像的震撼，体验长沙的城市绿肺。' },
+  { id: 'it3', day: 'Day 1', mealTime: '午餐', timeLabel: '13:00', placeId: 'r1', description: '来到太平老街，打卡本地人扎堆的笨萝卜，体验重油重辣的下饭湘菜。' },
+  { id: 'it4', day: 'Day 1', mealTime: '探秘', timeLabel: '15:30', placeId: 's3', description: '前往湖南博物院，穿越千年一睹马王堆汉墓的神秘，领略湖湘文化底蕴。' },
+  { id: 'it5', day: 'Day 1', mealTime: '晚餐', timeLabel: '19:00', placeId: 'r15', description: '海信广场文和友，边吃小龙虾边感受80年代的老长沙市井氛围，打卡出片圣地。' },
+  { id: 'it6', day: 'Day 2', mealTime: '早晨', timeLabel: '09:00', placeId: 'r9', description: '坡子街肆姐面粉馆，一碗原汤肉丝粉，开启新的一天。' },
+  { id: 'it7', day: 'Day 2', mealTime: '徒步', timeLabel: '10:30', placeId: 's2', description: '登岳麓山，赏爱晚亭红叶，体验刺激的滑道下山，俯瞰大学城全景。' },
+  { id: 'it8', day: 'Day 2', mealTime: '午后', timeLabel: '14:00', placeId: 'r22', description: '下山后来杯地道的茶颜悦色幽兰拿铁，稍作休息，回味两天行程。' },
+  { id: 'it9', day: 'Day 2', mealTime: '收官', timeLabel: '18:00', placeId: 'r14', description: '自由漫游收官大餐！天宝兄弟吃顿好的，用顶级口味虾和口味蟹犒劳自己。' }
 ];

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { Navbar } from './Navbar';
 import { Footer } from './Footer';
 import { ArrowUp, MessageCircle } from 'lucide-react';
@@ -7,6 +7,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 export function Layout() {
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -23,8 +28,19 @@ export function Layout() {
   return (
     <div className="min-h-screen flex flex-col bg-cream text-stone-800 font-sans selection:bg-xiang-red/20 selection:text-xiang-red">
       <Navbar />
-      <main className="flex-grow pt-16 flex flex-col">
-        <Outlet />
+      <main className="flex-grow pt-16 flex flex-col relative">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={location.pathname}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className="flex flex-col flex-grow"
+          >
+            <Outlet />
+          </motion.div>
+        </AnimatePresence>
       </main>
       <Footer />
 

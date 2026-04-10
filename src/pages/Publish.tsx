@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { useNavigate } from 'react-router-dom';
 import { Place } from '../data/mockData';
 import { Helmet } from 'react-helmet-async';
+import toast from 'react-hot-toast';
 
 interface PublishForm {
   name: string;
@@ -36,6 +37,11 @@ export function Publish() {
             type="text"
             value={loginInput}
             onChange={(e) => setLoginInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && loginInput.trim()) {
+                login(loginInput.trim());
+              }
+            }}
             placeholder="输入您的昵称 (如: 资深吃货老王)"
             className="w-full px-4 py-3 border border-stone-300 mb-4 focus:outline-none focus:border-xiang-red transition-colors"
           />
@@ -73,10 +79,10 @@ export function Publish() {
       const places = existing ? JSON.parse(existing) : [];
       places.push(newPlace);
       localStorage.setItem('xiangyu_ugc_places', JSON.stringify(places));
-      alert('发布成功！您的攻略已加入全网知识库引擎！');
+      toast.success('发布成功！您的攻略已加入全网知识库引擎！', { duration: 4000 });
       navigate('/search');
     } catch (e) {
-      alert('存储空间不足或出现错误');
+      toast.error('存储空间不足或出现错误');
     }
   };
 

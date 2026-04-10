@@ -22,8 +22,8 @@ const staggerContainer = {
 };
 
 export function Home() {
-  const saturdayItinerary = mockItinerary.filter(i => i.day === 'Saturday');
-  const sundayItinerary = mockItinerary.filter(i => i.day === 'Sunday');
+  const saturdayItinerary = mockItinerary.filter(i => i.day === 'Day 1');
+  const sundayItinerary = mockItinerary.filter(i => i.day === 'Day 2');
   const mockPlaces = getMergedPlaces();
 
   return (
@@ -66,10 +66,15 @@ export function Home() {
               安的 48 小时私人定制，带你品味最真实的星城烟火。
             </motion.p>
             <motion.div variants={heroVariants} className="flex flex-col sm:flex-row gap-6">
-              <a href="#timeline" className="px-8 py-4 bg-xiang-red text-white text-sm tracking-wider hover:bg-xiang-red-dark transition-colors flex items-center justify-center gap-2">
-                开启 48 小时行程
+              <button 
+                onClick={() => {
+                  document.getElementById('timeline')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="px-8 py-4 bg-xiang-red text-white text-sm tracking-wider hover:bg-xiang-red-dark transition-colors flex items-center justify-center gap-2"
+              >
+                开启漫游指南
                 <ArrowRight className="w-4 h-4" />
-              </a>
+              </button>
               <Link to="/map" className="px-8 py-4 bg-transparent border border-cream/30 text-cream text-sm tracking-wider hover:bg-white hover:text-dark transition-colors flex items-center justify-center">
                 浏览知识导图
               </Link>
@@ -104,7 +109,7 @@ export function Home() {
           {/* Saturday */}
           <div className="relative">
             <div className="sticky top-24 z-10 bg-cream/90 backdrop-blur-sm py-4 mb-12 border-b border-stone-200">
-              <h3 className="text-3xl font-serif text-xiang-red">第一天 / 周六</h3>
+              <h3 className="text-3xl font-serif text-xiang-red">第一天 / Day 1</h3>
               <p className="text-stone-500 mt-1">从市井早餐到夜市小龙虾</p>
             </div>
             
@@ -118,7 +123,7 @@ export function Home() {
           {/* Sunday */}
           <div className="relative">
             <div className="sticky top-24 z-10 bg-cream/90 backdrop-blur-sm py-4 mb-12 border-b border-stone-200">
-              <h3 className="text-3xl font-serif text-xiang-red">第二天 / 周日</h3>
+              <h3 className="text-3xl font-serif text-xiang-red">第二天 / Day 2</h3>
               <p className="text-stone-500 mt-1">老街走街串巷与登高望远</p>
             </div>
             
