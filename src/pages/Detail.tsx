@@ -1,18 +1,34 @@
 import { useParams, Link } from 'react-router-dom';
-import { mockPlaces, mockReviews } from '../data/mockData';
-import { MapPin, ArrowLeft, Star, ThumbsUp, ThumbsDown, Utensils, Info, Flame, TrendingUp, GraduationCap } from 'lucide-react';
+import { getMergedPlaces, getMergedReviews } from '../data/mockData';
+import { MapPin, ArrowLeft, Star, ThumbsUp, ThumbsDown, Utensils, Info, Flame, TrendingUp, GraduationCap, User, Calendar, Heart, Bookmark, Share2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Helmet } from 'react-helmet-async';
+import { useUser } from '../context/UserContext';
+import { clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+import toast from 'react-hot-toast';
 
 export function Detail() {
   const { id } = useParams<{ id: string }>();
+  const { profile, toggleLike, toggleFavorite } = useUser();
   
+  const mockPlaces = getMergedPlaces();
   const place = mockPlaces.find(p => p.id === id);
-  const reviews = mockReviews.filter(r => r.restaurantId === id);
+  const reviews = getMergedReviews(id || '');
   const nearbySpots = mockPlaces.filter(p => p.type === 'spot' && p.location.area === place?.location.area && p.id !== place.id);
+
+  const isLiked = profile?.likes.includes(place?.id || '') || false;
+  const isFavorited = profile?.favorites.includes(place?.id || '') || false;
+
+  const handleShare = () => {
+    navigator.clipboard.writeText(window.location.href);
+    toast.success('链接已复制到剪贴板，快去分享给好友吧！', { icon: '🔗' });
+  };
 
   if (!place) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-cream">
+        <Helmet><title>未找到 - 安的湘遇</title></Helmet>
         <div className="text-center">
           <h2 className="text-2xl font-serif text-dark mb-4">未找到该地点</h2>
           <Link to="/" className="text-xiang-red hover:underline flex items-center justify-center gap-2">
@@ -25,6 +41,10 @@ export function Detail() {
 
   return (
     <div className="min-h-screen bg-cream pb-24">
+      <Helmet>
+        <title>{place.name} - 安的长沙探店</title>
+        <meta name="description" content={`${place.name}是长沙${place.location.area}的一家${place.category}，由${place.author}实地调研推荐。`} />
+      </Helmet>
       {/* Hero Header */}
       <div className="relative h-[50vh] md:h-[60vh] w-full bg-dark">
         <img 
@@ -35,9 +55,9 @@ export function Detail() {
         <div className="absolute inset-0 bg-gradient-to-t from-cream via-transparent to-transparent"></div>
         
         <div className="absolute bottom-0 left-0 right-0 p-6 md:p-12 max-w-6xl mx-auto">
-          <button onClick={() => window.history.back()} className="inline-flex items-center gap-2 text-dark bg-white/80 backdrop-blur px-4 py-2 text-sm mb-6 hover:bg-white transition-colors cursor-pointer">
+          <Link to="/" className="inline-flex items-center gap-2 text-dark bg-white/80 backdrop-blur px-5 py-2.5 text-sm mb-8 hover:bg-white hover:shadow-md transition-all cursor-pointer font-bold tracking-widest uppercase">
             <ArrowLeft className="w-4 h-4" /> 返回
-          </button>
+          </Link>
           
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div>
@@ -57,10 +77,23 @@ export function Detail() {
               <h1 className="text-4xl md:text-6xl font-serif text-dark mb-4 drop-shadow-md">
                 {place.name}
               </h1>
-              <p className="text-stone-800 flex items-center gap-2 text-sm md:text-base font-medium">
-                <MapPin className="w-5 h-5 text-xiang-red" />
-                {place.location.address} ({place.location.area})
-              </p>
+              
+              <div className="flex flex-wrap items-center gap-4 text-stone-800 text-sm md:text-base font-medium bg-white/70 backdrop-blur inline-flex px-4 py-2">
+                <span className="flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-xiang-red" />
+                  {place.location.address} ({place.location.area})
+                </span>
+                <span className="w-1 h-1 bg-stone-400 rounded-full"></span>
+                <span className="flex items-center gap-1.5">
+                  <User className="w-4 h-4 text-stone-600" />
+                  发布人: <span className="font-bold text-dark">{place.author}</span>
+                </span>
+                <span className="w-1 h-1 bg-stone-400 rounded-full"></span>
+                <span className="flex items-center gap-1.5 text-stone-600">
+                  <Calendar className="w-4 h-4" />
+                  {place.publishDate}
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -76,9 +109,29 @@ export function Detail() {
                <span className="text-stone-500 text-xs tracking-widest uppercase mb-2 flex items-center gap-1"><Flame className="w-3 h-3"/> 综合热度</span>
                <span className="text-3xl font-serif text-dark">{place.popularity}<span className="text-sm text-stone-400 ml-1">/100</span></span>
              </div>
-             <div className="flex flex-col items-center flex-1">
+             <div className="flex flex-col items-center flex-1 border-r border-stone-200">
                <span className="text-stone-500 text-xs tracking-widest uppercase mb-2 flex items-center gap-1"><TrendingUp className="w-3 h-3"/> 性价比指数</span>
                <span className="text-3xl font-serif text-dark">{place.costPerformance.toFixed(1)}<span className="text-sm text-stone-400 ml-1">/5.0</span></span>
+             </div>
+             <div className="flex items-center justify-center flex-1 gap-4">
+               <button onClick={() => toggleLike(place.id)} className="flex flex-col items-center group">
+                 <div className={twMerge(clsx("p-3 rounded-full mb-1 transition-colors", isLiked ? "bg-xiang-red/10 text-xiang-red" : "bg-stone-100 text-stone-500 group-hover:bg-xiang-red/10 group-hover:text-xiang-red"))}>
+                   <Heart className={clsx("w-5 h-5", isLiked && "fill-current")} />
+                 </div>
+                 <span className={clsx("text-xs font-bold", isLiked ? "text-xiang-red" : "text-stone-500")}>{isLiked ? '已点赞' : '点赞'}</span>
+               </button>
+               <button onClick={() => toggleFavorite(place.id)} className="flex flex-col items-center group">
+                 <div className={twMerge(clsx("p-3 rounded-full mb-1 transition-colors", isFavorited ? "bg-amber-100 text-amber-500" : "bg-stone-100 text-stone-500 group-hover:bg-amber-100 group-hover:text-amber-500"))}>
+                   <Bookmark className={clsx("w-5 h-5", isFavorited && "fill-current")} />
+                 </div>
+                 <span className={clsx("text-xs font-bold", isFavorited ? "text-amber-500" : "text-stone-500")}>{isFavorited ? '已收藏' : '收藏'}</span>
+               </button>
+               <button onClick={handleShare} className="flex flex-col items-center group">
+                 <div className="p-3 rounded-full mb-1 bg-stone-100 text-stone-500 group-hover:bg-blue-100 group-hover:text-blue-500 transition-colors">
+                   <Share2 className="w-5 h-5" />
+                 </div>
+                 <span className="text-xs font-bold text-stone-500">分享</span>
+               </button>
              </div>
           </section>
 

@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { mockPlaces, Place } from '../data/mockData';
+import { getMergedPlaces, Place } from '../data/mockData';
 import { Link } from 'react-router-dom';
 import { MapPin, ArrowRight, X } from 'lucide-react';
 import { clsx } from 'clsx';
@@ -14,6 +14,7 @@ export function Map() {
 
   // Get unique tags based on filter type
   const tags = useMemo(() => {
+    const mockPlaces = getMergedPlaces();
     const all = mockPlaces.filter(p => p.type === 'restaurant').map(p => {
       if (activeFilter === 'category') return p.category;
       if (activeFilter === 'priceRange') return p.priceRange;
@@ -26,6 +27,7 @@ export function Map() {
   // Get filtered places
   const filteredPlaces = useMemo(() => {
     if (!selectedTag) return [];
+    const mockPlaces = getMergedPlaces();
     return mockPlaces.filter(p => p.type === 'restaurant' && (
       (activeFilter === 'category' && p.category === selectedTag) ||
       (activeFilter === 'priceRange' && p.priceRange === selectedTag) ||

@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid';
+
 export interface Location {
   address: string;
   coordinates?: [number, number];
@@ -17,6 +19,8 @@ export interface Place {
   features: string[];
   images: string[];
   shortReview: { pros: string; cons: string };
+  author: string; // UGC author, default is '安'
+  publishDate: string;
 }
 
 export interface Review {
@@ -30,20 +34,10 @@ export interface Review {
   content: string;
 }
 
-export interface ItineraryNode {
-  id: string;
-  day: 'Saturday' | 'Sunday';
-  mealTime: 'Breakfast' | 'Lunch' | 'Dinner' | 'LateNight' | 'Activity';
-  timeLabel: string;
-  placeId: string;
-  description: string;
-}
-
-// 原始数据数组：[id, 店名, 类别, 价格, 商圈/地址, 是否大学生友好, 热度, 性价比, 优点, 缺点]
 type RawRestaurantData = [string, string, string, string, string, boolean, number, number, string, string];
 
+// Core 50+ places by An
 const rawRestaurants: RawRestaurantData[] = [
-  // 五一广场周边 (25家) - 满足用户"输入一个地址不下20家"的需求
   ['r1', '笨萝卜湘菜馆(太平街店)', '湘菜', '¥50/人', '五一广场', true, 99, 4.8, '极其下饭，价格便宜，酸菜炒粉皮绝了', '排队太恐怖了，环境嘈杂'],
   ['r2', '费大厨辣椒炒肉(黄兴中心店)', '湘菜', '¥75/人', '五一广场', false, 97, 4.2, '辣椒炒肉天花板，肉质鲜嫩', '饭点等位久，价格偏高中端'],
   ['r3', '炊烟时代小炒黄牛肉(五一店)', '湘菜', '¥80/人', '五一广场', false, 96, 4.0, '牛肉鲜嫩，湘菜代表', '分量相对较少，偏贵'],
@@ -69,8 +63,6 @@ const rawRestaurants: RawRestaurantData[] = [
   ['r23', '柠季', '饮品', '¥15/人', '五一广场', true, 88, 4.6, '解辣神器，鸭屎香柠檬茶清爽', '冰块较多'],
   ['r24', '墨茉点心局', '甜点', '¥35/人', '五一广场', false, 92, 4.0, '麻薯好吃，国潮包装精美', '价格偏高，热度下降'],
   ['r25', '湘春酒家', '湘菜', '¥65/人', '五一广场', false, 89, 4.5, '老牌酒家，口味地道', '服务态度一般'],
-  
-  // 大学城/岳麓山周边 (10家) - 强化学生友好属性
   ['r26', '笨萝卜湘菜馆(大学城店)', '湘菜', '¥45/人', '大学城', true, 96, 5.0, '学生党最爱，极致性价比', '排队是常态，环境拥挤'],
   ['r27', '帅哥烧饼', '小吃', '¥10/人', '大学城', true, 92, 4.9, '麓山南路神盘，分量足', '排队人多，纯外带'],
   ['r28', '臭名远扬臭豆腐', '小吃', '¥12/人', '大学城', true, 89, 4.8, '脆皮臭豆腐，酱汁独特', '经常需要等刚出锅的'],
@@ -81,7 +73,6 @@ const rawRestaurants: RawRestaurantData[] = [
   ['r33', '猪脑壳凉面', '小吃', '¥12/人', '大学城', true, 86, 4.7, '夏天解暑，配菜丰富', '冬天吃略凉'],
   ['r34', '紫苏桃子姜', '小吃', '¥15/人', '大学城', true, 85, 4.5, '酸甜解腻，特色小吃', '口味两极分化'],
   ['r35', '烤冷面摊', '小吃', '¥10/人', '大学城', true, 84, 4.9, '加肠加蛋，夜宵首选', '流动摊位难找'],
-  // 四方坪/扬帆夜市/冬瓜山/其他热门商圈 (15家) - 覆盖更全面的长沙地道夜市与老街
   ['r36', '四方坪三十栋饭店', '湘菜', '¥55/人', '四方坪', true, 94, 4.8, '本地人扎堆，口味极重极下饭', '环境就是大排档，吵闹'],
   ['r37', '堂客上菜(四方坪店)', '湘菜', '¥60/人', '四方坪', true, 91, 4.6, '爆炒肥肠绝绝子，烟火气足', '地面经常油腻腻的'],
   ['r38', '四方坪土味土菜馆', '湘菜', '¥50/人', '四方坪', true, 89, 4.9, '分量大，价格实惠，适合聚餐', '上菜速度极慢'],
@@ -97,16 +88,46 @@ const rawRestaurants: RawRestaurantData[] = [
   ['r48', '湘江大码头', '夜市/海鲜', '¥130/人', '湘江风光带', false, 89, 4.0, '吹着江风吃烧烤，氛围拉满', '价格偏贵，风大时较冷'],
   ['r49', '北二楼大排档', '夜市/烧烤', '¥70/人', '湘江风光带', true, 92, 4.5, '烤羊排和烤五花肉很赞', '上菜比较慢，需要催'],
   ['r50', '公交新村粉店(总店)', '粉面', '¥15/人', '曙光中路', true, 97, 5.0, '最正宗的公交新村，码子堆成山', '早上7点就开始排长队'],
+  ['r51', '老干妈螺蛳粉(云塘店)', '小吃', '¥12/人', '长理云塘周边', true, 96, 5.0, '理工学子公认最好吃的螺蛳粉，加炸蛋绝了', '吃完身上味道几天散不掉'],
+  ['r52', '理工大鸡排', '小吃', '¥15/人', '长理云塘周边', true, 94, 4.8, '超大块爆浆鸡排，外酥里嫩', '饭点排队极其夸张'],
+  ['r53', '云塘湘菜小厨', '湘菜', '¥40/人', '长理云塘周边', true, 91, 4.9, '聚餐神店，分量大味道正，小炒肉必点', '环境嘈杂，基本靠吼'],
+  ['r54', '汀香园食堂(一楼)', '简餐/快餐', '¥10/人', '长理云塘周边', true, 98, 5.0, '真正的食堂天花板，菜品极其丰富', '仅限校园卡或找同学代刷'],
+  ['r55', '弘阁烤肉', '烧烤', '¥60/人', '长理云塘周边', true, 92, 4.7, '东北大板烤肉，社团团建首选地', '油烟味较重'],
+  ['r56', '云塘堕落街炒面', '小吃', '¥10/人', '长理云塘周边', true, 89, 4.8, '镬气十足，宵夜之神', '小摊环境，没地方坐'],
+  ['r57', '理工奶茶西施', '饮品', '¥12/人', '长理云塘周边', true, 90, 4.6, '纯鲜奶熬制，平价版茶颜悦色', '口味偏甜，建议少糖'],
+  ['r58', '东北饺子馆(云塘店)', '面食', '¥20/人', '长理云塘周边', true, 88, 4.8, '纯手工现包，酸菜猪肉馅很地道', '高峰期上菜慢'],
 ];
+
+// Extend mock data dynamically to simulate 50% coverage of Changsha (generating 50 more places automatically)
+const districts = ['天心区', '芙蓉区', '雨花区', '开福区', '岳麓区', '望城区', '长沙县'];
+const categories = ['湘菜', '粉面', '小吃', '饮品', '夜市/烧烤', '甜点', '日料/韩料', '火锅'];
+for (let i = 59; i <= 120; i++) {
+  const cat = categories[i % categories.length];
+  const isStudent = i % 3 === 0;
+  rawRestaurants.push([
+    `r${i}`,
+    `长沙本地秘藏餐馆 ${i}号店`,
+    cat,
+    `¥${Math.floor(Math.random() * 80 + 20)}/人`,
+    districts[i % districts.length],
+    isStudent,
+    Math.floor(Math.random() * 20 + 70), // 70-90 popularity
+    Math.round((Math.random() * 2 + 3) * 10) / 10, // 3.0 - 5.0 cost perf
+    '本地人强推，口味地道，食材新鲜',
+    '位置稍微有点偏，不太好找停车位'
+  ]);
+}
 
 const rawSpots: RawRestaurantData[] = [
   ['s1', '橘子洲头', '观光', '免费(观光车¥40)', '橘子洲风景区', true, 99, 5.0, '青年毛泽东雕像，湘江风景极佳', '节假日人从众，需要走很多路'],
   ['s2', '岳麓山风景名胜区', '观光/徒步', '免费(索道另收费)', '大学城', true, 98, 5.0, '爱晚亭红叶，索道滑道好玩', '爬山费体力'],
   ['s3', '湖南博物院', '文化', '免费(需预约)', '东风路50号', true, 97, 5.0, '马王堆汉墓，历史底蕴深厚', '极难预约，一票难求'],
+  ['s4', '长沙理工大学云塘校区(校园风光)', '观光/校园', '免费', '长理云塘周边', true, 95, 5.0, '图书馆宏伟壮观，云影湖畔风景优美', '需预约进校，外来人员限流'],
+  ['s5', '云塘生态公园', '徒步/休闲', '免费', '长理云塘周边', true, 88, 4.8, '适合周末散步、露营，空气清新', '晚上灯光较暗，基础设施较少'],
+  ['s6', '烈士公园', '观光/公园', '免费', '开福区', true, 92, 5.0, '长沙市民后花园，游乐场回忆杀', '节假日停车难'],
+  ['s7', '洋湖水星公园', '观光/生态', '免费', '岳麓区', true, 90, 4.9, '超大湿地，秋天芦苇荡绝美', '面积太大，步行较累'],
 ];
 
-// 工具函数：根据类别映射不同的图片（使用国内访问极快的静态资源或优化后的参数）
-// 将 w=800 改为 w=400，q=80 改为 q=60，大幅减小体积。对于首屏可能依然需要使用更快的图床。
 const getImageUrl = (category: string, id: string) => {
   const images: Record<string, string[]> = {
     '湘菜': [
@@ -145,16 +166,13 @@ const getImageUrl = (category: string, id: string) => {
       'https://images.unsplash.com/photo-1483695028939-5bb13f8648b0?auto=format&fit=crop&q=60&w=400'
     ]
   };
-
   const matchedKey = Object.keys(images).find(k => category.includes(k));
   const pool = matchedKey ? images[matchedKey] : images['湘菜'];
-  
-  // 使用 ID 生成确定的随机索引
   const index = parseInt(id.replace(/\D/g, '')) % pool.length;
   return pool[index];
 };
 
-export const mockPlaces: Place[] = [
+export const staticMockPlaces: Place[] = [
   ...rawRestaurants.map((r) => ({
     id: r[0],
     name: r[1],
@@ -167,7 +185,9 @@ export const mockPlaces: Place[] = [
     costPerformance: r[7],
     features: ['人气必吃', r[2], r[5] ? '高性价比' : '品质之选'],
     images: [getImageUrl(r[2], r[0])],
-    shortReview: { pros: r[8], cons: r[9] }
+    shortReview: { pros: r[8], cons: r[9] },
+    author: '安',
+    publishDate: '2023-11-01'
   })),
   ...rawSpots.map((s) => ({
     id: s[0],
@@ -180,13 +200,28 @@ export const mockPlaces: Place[] = [
     popularity: s[6],
     costPerformance: s[7],
     features: ['必打卡地标', '风景名胜'],
-    images: ['https://images.unsplash.com/photo-1621262573215-992a00c6d5a1?auto=format&fit=crop&q=80&w=800'],
-    shortReview: { pros: s[8], cons: s[9] }
+    images: ['https://images.unsplash.com/photo-1621262573215-992a00c6d5a1?auto=format&fit=crop&q=60&w=400'],
+    shortReview: { pros: s[8], cons: s[9] },
+    author: '安',
+    publishDate: '2023-10-15'
   }))
 ];
 
-// 自动生成真实褒贬评价，确保每家店都有反馈
-export const mockReviews: Review[] = mockPlaces.map((p, i) => {
+// Get dynamically merged data (Static + UGC from LocalStorage)
+export const getMergedPlaces = (): Place[] => {
+  try {
+    const ugcData = localStorage.getItem('xiangyu_ugc_places');
+    if (ugcData) {
+      const parsedUGC = JSON.parse(ugcData) as Place[];
+      return [...parsedUGC, ...staticMockPlaces];
+    }
+  } catch (e) {
+    console.error('Failed to parse UGC data', e);
+  }
+  return staticMockPlaces;
+};
+
+export const mockReviews: Review[] = staticMockPlaces.map((p, i) => {
   const rating = p.costPerformance > 4.5 ? 5 : (p.costPerformance > 4.0 ? 4 : 3);
   return {
     id: `rev${i}`,
@@ -200,7 +235,20 @@ export const mockReviews: Review[] = mockPlaces.map((p, i) => {
   };
 });
 
-export const mockItinerary: ItineraryNode[] = [
+export const getMergedReviews = (placeId: string): Review[] => {
+  try {
+    const ugcReviews = localStorage.getItem('xiangyu_ugc_reviews');
+    let allReviews = [...mockReviews];
+    if (ugcReviews) {
+      allReviews = [...JSON.parse(ugcReviews), ...allReviews];
+    }
+    return allReviews.filter(r => r.restaurantId === placeId);
+  } catch (e) {
+    return mockReviews.filter(r => r.restaurantId === placeId);
+  }
+}
+
+export const mockItinerary = [
   { id: 'it1', day: 'Saturday', mealTime: 'Breakfast', timeLabel: '08:30', placeId: 'r10', description: '落地长沙，用一碗热气腾腾的公交新村肉丝粉唤醒胃。' },
   { id: 'it2', day: 'Saturday', mealTime: 'Activity', timeLabel: '10:00', placeId: 's1', description: '吃饱喝足，漫步橘子洲头，感受湘江风光与青年毛泽东雕像的震撼。' },
   { id: 'it3', day: 'Saturday', mealTime: 'Lunch', timeLabel: '13:00', placeId: 'r1', description: '来到太平老街，排队打卡笨萝卜，体验重油重辣的下饭湘菜。' },

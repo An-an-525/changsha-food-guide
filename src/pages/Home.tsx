@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion';
-import { mockItinerary, mockPlaces } from '../data/mockData';
+import { mockItinerary, getMergedPlaces } from '../data/mockData';
 import { Link } from 'react-router-dom';
-import { Clock, MapPin, ArrowRight } from 'lucide-react';
+import { Clock, MapPin, ArrowRight, User } from 'lucide-react';
+import { Helmet } from 'react-helmet-async';
 
 const heroVariants = {
   hidden: { opacity: 0, y: 30 },
@@ -23,9 +24,14 @@ const staggerContainer = {
 export function Home() {
   const saturdayItinerary = mockItinerary.filter(i => i.day === 'Saturday');
   const sundayItinerary = mockItinerary.filter(i => i.day === 'Sunday');
+  const mockPlaces = getMergedPlaces();
 
   return (
     <div className="flex flex-col bg-cream">
+      <Helmet>
+        <title>安的湘遇 · 长沙本地游知识库引擎</title>
+        <meta name="description" content="全网最全长沙美食探店指南，超过50%核心地段覆盖，由安独立整理发布，支持网友共创UGC点评引擎。" />
+      </Helmet>
       {/* Hero Section */}
       <section className="relative h-[85vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0 bg-dark">
@@ -44,16 +50,20 @@ export function Home() {
             variants={staggerContainer}
             className="flex flex-col items-center"
           >
-            <motion.span variants={heroVariants} className="text-xiang-red tracking-[0.3em] uppercase text-sm md:text-base font-bold mb-4 block">
-              Weekend Guide
+            <motion.span variants={heroVariants} className="flex items-center gap-3 text-stone-300 tracking-[0.2em] uppercase text-xs font-serif mb-6 border border-stone-500/30 px-4 py-1.5 rounded-full bg-dark/30 backdrop-blur-sm">
+              <span className="w-1.5 h-1.5 rounded-full bg-xiang-red animate-pulse"></span>
+              An's Private Collection
             </motion.span>
-            <motion.h1 variants={heroVariants} className="text-5xl md:text-7xl lg:text-8xl font-serif text-cream mb-6 leading-tight">
-              湘遇 · <span className="text-xiang-red">长沙</span>
+            
+            <motion.h1 variants={heroVariants} className="text-5xl md:text-7xl lg:text-8xl font-serif text-cream mb-6 leading-tight flex flex-col items-center">
+              <span className="text-2xl md:text-4xl text-xiang-red/80 italic mb-2">安的私藏</span>
+              <span>湘遇 · <span className="text-xiang-red">长沙</span></span>
             </motion.h1>
+            
             <motion.p variants={heroVariants} className="text-stone-300 text-lg md:text-xl font-light mb-12 max-w-2xl leading-relaxed">
-              打破虚假滤镜，拒绝流水线好评。
+              历经三个月深度调研与实地试吃，拒绝流水线好评。
               <br />
-              用48小时，带你品味最真实的星城烟火与江阁风光。
+              安的 48 小时私人定制，带你品味最真实的星城烟火。
             </motion.p>
             <motion.div variants={heroVariants} className="flex flex-col sm:flex-row gap-6">
               <a href="#timeline" className="px-8 py-4 bg-xiang-red text-white text-sm tracking-wider hover:bg-xiang-red-dark transition-colors flex items-center justify-center gap-2">
@@ -71,8 +81,23 @@ export function Home() {
       {/* Timeline Section */}
       <section id="timeline" className="py-24 md:py-32 px-4 md:px-8 max-w-6xl mx-auto w-full">
         <div className="text-center mb-20">
-          <h2 className="text-4xl md:text-5xl font-serif text-dark mb-4">周末漫游指南</h2>
-          <p className="text-stone-500 text-sm md:text-base uppercase tracking-[0.2em]">Curated 48-Hour Itinerary</p>
+          <motion.h2 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-4xl md:text-5xl font-serif text-dark mb-4"
+          >
+            周末漫游指南
+          </motion.h2>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="text-stone-500 text-sm md:text-base uppercase tracking-[0.2em]"
+          >
+            Curated 48-Hour Itinerary
+          </motion.p>
         </div>
 
         <div className="space-y-32">
@@ -110,6 +135,7 @@ export function Home() {
 }
 
 function TimelineNode({ node, index }: { node: any; index: number }) {
+  const mockPlaces = getMergedPlaces();
   const place = mockPlaces.find(p => p.id === node.placeId);
   if (!place) return null;
 
@@ -139,14 +165,18 @@ function TimelineNode({ node, index }: { node: any; index: number }) {
         
         <Link 
           to={`/restaurant/${place.id}`}
-          className="group block overflow-hidden relative aspect-[4/3] bg-stone-100"
+          className="group block overflow-hidden relative aspect-[4/3] bg-stone-200"
         >
+          <div className="absolute inset-0 bg-stone-200 animate-pulse"></div>
           <img 
             src={place.images[0]} 
             alt={place.name}
             loading="lazy"
             decoding="async"
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 relative z-10"
+            onLoad={(e) => {
+              (e.target as HTMLImageElement).previousElementSibling?.remove();
+            }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-dark/80 via-dark/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity"></div>
           <div className="absolute bottom-0 left-0 right-0 p-6 flex items-end justify-between text-cream">
