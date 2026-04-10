@@ -1,8 +1,7 @@
-import { useState } from 'react';
 import { useUser } from '../context/UserContext';
 import { useForm } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
 import { Place } from '../data/mockData';
 import { Helmet } from 'react-helmet-async';
 import toast from 'react-hot-toast';
@@ -19,41 +18,13 @@ interface PublishForm {
 }
 
 export function Publish() {
-  const { currentUser, login } = useUser();
+  const { currentUser } = useUser();
   const { register, handleSubmit, formState: { errors } } = useForm<PublishForm>();
   const navigate = useNavigate();
-  const [loginInput, setLoginInput] = useState('');
 
+  // Route protection
   if (!currentUser) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-cream px-4">
-        <Helmet>
-          <title>登录账号 - 安的湘遇</title>
-        </Helmet>
-        <div className="bg-white p-8 border border-stone-200 shadow-sm max-w-md w-full text-center">
-          <h2 className="text-2xl font-serif text-dark mb-2">加入安的探店者联盟</h2>
-          <p className="text-stone-500 text-sm mb-6">每个人都可以拥有独立的账户，发布自己的私藏推荐</p>
-          <input 
-            type="text"
-            value={loginInput}
-            onChange={(e) => setLoginInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && loginInput.trim()) {
-                login(loginInput.trim());
-              }
-            }}
-            placeholder="输入您的昵称 (如: 资深吃货老王)"
-            className="w-full px-4 py-3 border border-stone-300 mb-4 focus:outline-none focus:border-xiang-red transition-colors"
-          />
-          <button 
-            onClick={() => loginInput.trim() && login(loginInput.trim())}
-            className="w-full bg-xiang-red text-white py-3 font-bold tracking-widest hover:bg-xiang-red-dark transition-colors"
-          >
-            一键创建账户并登录
-          </button>
-        </div>
-      </div>
-    );
+    return <Navigate to="/login?redirect=/publish" replace />;
   }
 
   const onSubmit = (data: PublishForm) => {

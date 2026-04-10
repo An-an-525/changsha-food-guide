@@ -10,6 +10,7 @@ import { Detail } from './pages/Detail';
 import { Search } from './pages/Search';
 import { Publish } from './pages/Publish';
 import { Profile } from './pages/Profile';
+import { Login } from './pages/Login';
 import { UserProvider } from './context/UserContext';
 
 createRoot(document.getElementById('root')!).render(
@@ -24,6 +25,7 @@ createRoot(document.getElementById('root')!).render(
               <Route path="search" element={<Search />} />
               <Route path="publish" element={<Publish />} />
               <Route path="profile" element={<Profile />} />
+              <Route path="login" element={<Login />} />
               <Route path="restaurant/:id" element={<Detail />} />
             </Route>
           </Routes>
