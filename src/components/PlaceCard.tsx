@@ -1,15 +1,16 @@
 import { Link } from 'react-router-dom';
 import { Place } from '../data/mockData';
-import { MapPin, GraduationCap, Flame, TrendingUp, ThumbsUp, ThumbsDown, Heart, Bookmark } from 'lucide-react';
+import { MapPin, GraduationCap, Flame, TrendingUp, ThumbsUp, ThumbsDown, Heart, Bookmark, CheckCircle } from 'lucide-react';
 import { useUser } from '../context/UserContext';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
 export function PlaceCard({ place }: { place: Place }) {
-  const { profile, toggleLike, toggleFavorite } = useUser();
+  const { profile, toggleLike, toggleFavorite, addCheckIn } = useUser();
 
   const isLiked = profile?.likes.includes(place.id) || false;
   const isFavorited = profile?.favorites.includes(place.id) || false;
+  const isCheckedIn = profile?.checkIns?.includes(place.id) || false;
 
   return (
     <div className="group flex flex-col bg-white border border-stone-200 hover:border-xiang-red/30 hover:shadow-lg transition-all h-full relative">
@@ -119,6 +120,25 @@ export function PlaceCard({ place }: { place: Place }) {
             {isFavorited ? '已收藏' : '收藏'}
           </button>
         </div>
+
+        <button 
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            addCheckIn(place.id);
+          }}
+          className={twMerge(
+            clsx(
+              "flex items-center gap-1 text-xs font-medium px-2 py-1 transition-colors border",
+              isCheckedIn 
+                ? "bg-emerald-50 text-emerald-600 border-emerald-200" 
+                : "bg-white text-stone-500 border-stone-200 hover:border-emerald-500 hover:text-emerald-600"
+            )
+          )}
+        >
+          <CheckCircle className="w-3.5 h-3.5" />
+          {isCheckedIn ? '已打卡' : '签到打卡'}
+        </button>
       </div>
     </div>
   );

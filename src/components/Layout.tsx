@@ -5,6 +5,8 @@ import { Footer } from './Footer';
 import { ArrowUp, MessageCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+import { OnboardingGuide } from './OnboardingGuide';
+
 export function Layout() {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const location = useLocation();
@@ -43,6 +45,7 @@ export function Layout() {
         </AnimatePresence>
       </main>
       <Footer />
+      <OnboardingGuide />
 
       {/* Floating Action Buttons */}
       <div className="fixed bottom-8 right-6 z-50 flex flex-col gap-3">

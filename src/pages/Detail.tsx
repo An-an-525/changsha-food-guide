@@ -1,21 +1,28 @@
 import { useParams, Link } from 'react-router-dom';
 import { getMergedPlaces, getMergedReviews } from '../data/mockData';
-import { MapPin, ArrowLeft, Star, ThumbsUp, ThumbsDown, Utensils, Info, Flame, TrendingUp, GraduationCap, User, Calendar, Heart, Bookmark, Share2 } from 'lucide-react';
+import { MapPin, ArrowLeft, Star, ThumbsUp, ThumbsDown, Utensils, Info, Flame, TrendingUp, GraduationCap, User, Calendar, Heart, Bookmark, Share2, PhoneCall, Navigation, Clock, MessageSquareWarning, CalendarPlus, BookOpen } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
 import { useUser } from '../context/UserContext';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import toast from 'react-hot-toast';
+import { useEffect } from 'react';
 
 export function Detail() {
   const { id } = useParams<{ id: string }>();
-  const { profile, toggleLike, toggleFavorite } = useUser();
+  const { profile, toggleLike, toggleFavorite, addHistory, addPoints } = useUser();
   
   const mockPlaces = getMergedPlaces();
   const place = mockPlaces.find(p => p.id === id);
   const reviews = getMergedReviews(id || '');
   const nearbySpots = mockPlaces.filter(p => p.type === 'spot' && p.location.area === place?.location.area && p.id !== place.id);
+
+  useEffect(() => {
+    if (place) {
+      addHistory(place.id);
+    }
+  }, [place?.id]);
 
   const isLiked = profile?.likes.includes(place?.id || '') || false;
   const isFavorited = profile?.favorites.includes(place?.id || '') || false;
@@ -23,6 +30,11 @@ export function Detail() {
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
     toast.success('链接已复制到剪贴板，快去分享给好友吧！', { icon: '🔗' });
+  };
+
+  const handleMockAction = (msg: string, icon: string, points?: number) => {
+    toast.success(msg, { icon });
+    if (points) addPoints(points, '解锁新功能互动');
   };
 
   if (!place) {
@@ -133,6 +145,52 @@ export function Detail() {
                  <span className="text-xs font-bold text-stone-500">分享</span>
                </button>
              </div>
+          </section>
+
+          {/* Utilities Toolbar */}
+          <section className="bg-white border border-stone-200 p-4 md:p-6 shadow-sm">
+            <h3 className="text-sm font-bold tracking-widest text-stone-400 uppercase mb-4">实用探店工具箱</h3>
+            <div className="grid grid-cols-4 md:grid-cols-8 gap-4">
+              <button onClick={() => window.open(`https://uri.amap.com/search?keyword=${encodeURIComponent(place.name + ' ' + place.location.address)}`, '_blank')} className="flex flex-col items-center gap-2 group">
+                <div className="w-12 h-12 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 group-hover:bg-blue-100 group-hover:text-blue-600 transition-colors">
+                  <Navigation className="w-5 h-5" />
+                </div>
+                <span className="text-xs text-stone-600 group-hover:text-blue-600">路线导航</span>
+              </button>
+              <button onClick={() => handleMockAction('正在呼叫商家...', '📞')} className="flex flex-col items-center gap-2 group">
+                <div className="w-12 h-12 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 group-hover:bg-emerald-100 group-hover:text-emerald-600 transition-colors">
+                  <PhoneCall className="w-5 h-5" />
+                </div>
+                <span className="text-xs text-stone-600 group-hover:text-emerald-600">拨打电话</span>
+              </button>
+              <button onClick={() => handleMockAction('正在加载最新电子菜单...', '📖', 1)} className="flex flex-col items-center gap-2 group">
+                <div className="w-12 h-12 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 group-hover:bg-amber-100 group-hover:text-amber-600 transition-colors">
+                  <BookOpen className="w-5 h-5" />
+                </div>
+                <span className="text-xs text-stone-600 group-hover:text-amber-600">查看菜单</span>
+              </button>
+              <button onClick={() => handleMockAction('营业时间：10:00 - 22:00，当前营业中！', '⏰')} className="flex flex-col items-center gap-2 group">
+                <div className="w-12 h-12 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 group-hover:bg-purple-100 group-hover:text-purple-600 transition-colors">
+                  <Clock className="w-5 h-5" />
+                </div>
+                <span className="text-xs text-stone-600 group-hover:text-purple-600">营业时间</span>
+              </button>
+              <button onClick={() => handleMockAction('已将该地点加入您的系统日历行程', '📅', 2)} className="flex flex-col items-center gap-2 group">
+                <div className="w-12 h-12 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 group-hover:bg-indigo-100 group-hover:text-indigo-600 transition-colors">
+                  <CalendarPlus className="w-5 h-5" />
+                </div>
+                <span className="text-xs text-stone-600 group-hover:text-indigo-600">加入日历</span>
+              </button>
+              <button onClick={() => handleMockAction('感谢纠错！审核通过后将发放积分奖励', '🛠️')} className="flex flex-col items-center gap-2 group">
+                <div className="w-12 h-12 rounded-full bg-stone-100 flex items-center justify-center text-stone-600 group-hover:bg-rose-100 group-hover:text-rose-600 transition-colors">
+                  <MessageSquareWarning className="w-5 h-5" />
+                </div>
+                <span className="text-xs text-stone-600 group-hover:text-rose-600">报错反馈</span>
+              </button>
+              {/* Desktop-only placeholders for alignment */}
+              <div className="hidden md:block"></div>
+              <div className="hidden md:block"></div>
+            </div>
           </section>
 
           {/* Features */}

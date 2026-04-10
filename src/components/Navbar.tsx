@@ -1,12 +1,17 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Compass, Map as MapIcon, Utensils, Search as SearchIcon, PenSquare, LogOut } from 'lucide-react';
+import { Compass, Map as MapIcon, Utensils, Search as SearchIcon, PenSquare, LogOut, Bell, Sun, CloudRain } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { useUser } from '../context/UserContext';
+import toast from 'react-hot-toast';
 
 export function Navbar() {
   const location = useLocation();
   const { currentUser, logout } = useUser();
+
+  const handleMockAction = (msg: string) => {
+    toast(msg, { icon: '✨', duration: 2000 });
+  };
 
   const navLinks = [
     { to: '/', icon: <Compass className="w-4 h-4" />, label: '周末导览' },
@@ -44,6 +49,20 @@ export function Navbar() {
                 <span className="text-sm">{link.label}</span>
               </Link>
             ))}
+          </div>
+
+          {/* Global Utilities */}
+          <div className="hidden lg:flex items-center gap-3 pl-4 border-l border-stone-200 text-stone-500">
+            <button onClick={() => handleMockAction('当前天气：多云转晴，24°C，适合出行探店。')} className="hover:text-amber-500 transition-colors" title="天气情况">
+              <CloudRain className="w-4 h-4" />
+            </button>
+            <button onClick={() => handleMockAction('深色模式(Dark Mode)即将在下个版本开放！')} className="hover:text-dark transition-colors" title="主题切换">
+              <Sun className="w-4 h-4" />
+            </button>
+            <button onClick={() => handleMockAction('暂无新消息通知')} className="hover:text-xiang-red transition-colors relative" title="消息中心">
+              <Bell className="w-4 h-4" />
+              {currentUser && <span className="absolute -top-1 -right-1 w-2 h-2 bg-xiang-red rounded-full"></span>}
+            </button>
           </div>
 
           {/* User Status */}

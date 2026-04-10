@@ -3,16 +3,17 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useUser } from '../context/UserContext';
 import { getMergedPlaces } from '../data/mockData';
 import { PlaceCard } from '../components/PlaceCard';
-import { Award, Star, Heart, MapPin, TrendingUp, ShieldCheck } from 'lucide-react';
+import { Award, Star, Heart, MapPin, TrendingUp, ShieldCheck, History, Gift, Store } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { Link, Navigate } from 'react-router-dom';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import toast from 'react-hot-toast';
 
-type Tab = 'published' | 'favorites' | 'likes';
+type Tab = 'published' | 'favorites' | 'likes' | 'history' | 'store';
 
 export function Profile() {
-  const { profile, currentUser } = useUser();
+  const { profile, currentUser, addPoints } = useUser();
   const [activeTab, setActiveTab] = useState<Tab>('favorites');
 
   if (!currentUser || !profile) {
@@ -24,6 +25,16 @@ export function Profile() {
   const publishedPlaces = mockPlaces.filter(p => p.author === currentUser);
   const favoritePlaces = mockPlaces.filter(p => profile.favorites.includes(p.id));
   const likedPlaces = mockPlaces.filter(p => profile.likes.includes(p.id));
+  const historyPlaces = profile.history.map(id => mockPlaces.find(p => p.id === id)).filter(Boolean) as typeof mockPlaces;
+
+  const handleRedeem = (item: string, cost: number) => {
+    if (profile.points >= cost) {
+      addPoints(-cost, `兑换商品: ${item}`);
+      toast.success(`成功兑换 ${item}！将通过系统消息发放。`, { icon: '🎁' });
+    } else {
+      toast.error(`积分不足！还差 ${cost - profile.points} 分，快去多打卡吧~`);
+    }
+  };
 
   const getLevel = (points: number) => {
     if (points >= 100) return { title: '资深老饕', color: 'text-purple-600', bg: 'bg-purple-100', icon: <ShieldCheck className="w-5 h-5 text-purple-600" /> };
@@ -47,6 +58,37 @@ export function Profile() {
     } else if (activeTab === 'likes') {
       places = likedPlaces;
       emptyMessage = '你还没有点赞过任何地点，去给喜欢的探店点个赞吧！';
+    } else if (activeTab === 'history') {
+      places = historyPlaces;
+      emptyMessage = '最近没有浏览记录，去首页随便逛逛吧！';
+    } else if (activeTab === 'store') {
+      return (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+          {[
+            { name: '茶颜悦色幽兰拿铁兑换券', cost: 100, image: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&q=60&w=400' },
+            { name: '笨萝卜湘菜馆免排队VIP卡', cost: 300, image: 'https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&q=60&w=400' },
+            { name: '安的私藏·绝密探店地图PDF', cost: 50, image: 'https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&q=60&w=400' }
+          ].map((item, i) => (
+            <div key={i} className="bg-white border border-stone-200 shadow-sm overflow-hidden flex flex-col group">
+              <div className="h-40 bg-stone-100 overflow-hidden relative">
+                <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                <div className="absolute top-3 right-3 bg-xiang-red text-white text-xs font-bold px-2 py-1 shadow-md">
+                  {item.cost} 积分
+                </div>
+              </div>
+              <div className="p-5 flex flex-col flex-grow">
+                <h4 className="font-bold text-dark mb-4">{item.name}</h4>
+                <button 
+                  onClick={() => handleRedeem(item.name, item.cost)}
+                  className="mt-auto w-full py-2 bg-dark text-cream text-sm font-bold tracking-widest hover:bg-xiang-red transition-colors"
+                >
+                  立即兑换
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      );
     }
 
     if (places.length === 0) {
@@ -132,11 +174,11 @@ export function Profile() {
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-stone-200 mb-8">
+        <div className="flex border-b border-stone-200 mb-8 overflow-x-auto whitespace-nowrap scrollbar-hide">
           <button
             onClick={() => setActiveTab('favorites')}
             className={twMerge(clsx(
-              "flex items-center gap-2 px-6 py-4 text-sm font-medium transition-colors relative",
+              "flex items-center gap-2 px-6 py-4 text-sm font-medium transition-colors relative flex-shrink-0",
               activeTab === 'favorites' ? "text-xiang-red" : "text-stone-500 hover:text-stone-800"
             ))}
           >
@@ -149,7 +191,7 @@ export function Profile() {
           <button
             onClick={() => setActiveTab('likes')}
             className={twMerge(clsx(
-              "flex items-center gap-2 px-6 py-4 text-sm font-medium transition-colors relative",
+              "flex items-center gap-2 px-6 py-4 text-sm font-medium transition-colors relative flex-shrink-0",
               activeTab === 'likes' ? "text-xiang-red" : "text-stone-500 hover:text-stone-800"
             ))}
           >
@@ -160,15 +202,41 @@ export function Profile() {
             )}
           </button>
           <button
+            onClick={() => setActiveTab('history')}
+            className={twMerge(clsx(
+              "flex items-center gap-2 px-6 py-4 text-sm font-medium transition-colors relative flex-shrink-0",
+              activeTab === 'history' ? "text-xiang-red" : "text-stone-500 hover:text-stone-800"
+            ))}
+          >
+            <History className="w-4 h-4" />
+            最近浏览
+            {activeTab === 'history' && (
+              <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-xiang-red" />
+            )}
+          </button>
+          <button
             onClick={() => setActiveTab('published')}
             className={twMerge(clsx(
-              "flex items-center gap-2 px-6 py-4 text-sm font-medium transition-colors relative",
+              "flex items-center gap-2 px-6 py-4 text-sm font-medium transition-colors relative flex-shrink-0",
               activeTab === 'published' ? "text-xiang-red" : "text-stone-500 hover:text-stone-800"
             ))}
           >
             <MapPin className="w-4 h-4" />
             我的发布
             {activeTab === 'published' && (
+              <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-xiang-red" />
+            )}
+          </button>
+          <button
+            onClick={() => setActiveTab('store')}
+            className={twMerge(clsx(
+              "flex items-center gap-2 px-6 py-4 text-sm font-medium transition-colors relative flex-shrink-0",
+              activeTab === 'store' ? "text-xiang-red" : "text-stone-500 hover:text-stone-800"
+            ))}
+          >
+            <Store className="w-4 h-4" />
+            积分商城
+            {activeTab === 'store' && (
               <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-xiang-red" />
             )}
           </button>

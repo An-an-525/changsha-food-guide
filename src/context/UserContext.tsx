@@ -6,6 +6,9 @@ export interface UserProfile {
   points: number;
   favorites: string[];
   likes: string[];
+  history: string[];
+  checkIns: string[];
+  hasSeenGuide: boolean;
 }
 
 interface UserContextType {
@@ -15,6 +18,9 @@ interface UserContextType {
   logout: () => void;
   toggleFavorite: (placeId: string) => void;
   toggleLike: (placeId: string) => void;
+  addHistory: (placeId: string) => void;
+  addCheckIn: (placeId: string) => void;
+  completeGuide: () => void;
   addPoints: (pts: number, reason: string) => void;
 }
 
@@ -39,15 +45,27 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     setProfile(p);
   };
 
+  const migrateProfile = (p: any): UserProfile => {
+    return {
+      username: p.username,
+      points: p.points || 0,
+      favorites: p.favorites || [],
+      likes: p.likes || [],
+      history: p.history || [],
+      checkIns: p.checkIns || [],
+      hasSeenGuide: p.hasSeenGuide || false
+    };
+  };
+
   useEffect(() => {
     const savedUser = localStorage.getItem('xiangyu_current_user');
     if (savedUser) {
       setCurrentUser(savedUser);
       const profiles = loadProfiles();
       if (profiles[savedUser]) {
-        setProfile(profiles[savedUser]);
+        setProfile(migrateProfile(profiles[savedUser]));
       } else {
-        const newProfile = { username: savedUser, points: 0, favorites: [], likes: [] };
+        const newProfile = migrateProfile({ username: savedUser });
         saveProfile(newProfile);
       }
     }
@@ -58,10 +76,10 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     setCurrentUser(username);
     const profiles = loadProfiles();
     if (profiles[username]) {
-      setProfile(profiles[username]);
+      setProfile(migrateProfile(profiles[username]));
       toast.success(`欢迎回来，${username}！`);
     } else {
-      const newProfile = { username, points: 10, favorites: [], likes: [] };
+      const newProfile = migrateProfile({ username, points: 10 });
       saveProfile(newProfile);
       toast.success(`注册成功！已赠送10个探店积分。`);
     }
@@ -110,6 +128,37 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const addHistory = (placeId: string) => {
+    if (!profile) return;
+    const currentHistory = profile.history || [];
+    // Remove if exists to push to front
+    const filtered = currentHistory.filter(id => id !== placeId);
+    const updated = { ...profile, history: [placeId, ...filtered].slice(0, 20) }; // Keep last 20
+    saveProfile(updated);
+  };
+
+  const addCheckIn = (placeId: string) => {
+    if (!profile) {
+      toast.error('请先登录账号才能打卡！');
+      return;
+    }
+    const currentCheckIns = profile.checkIns || [];
+    if (currentCheckIns.includes(placeId)) {
+      toast('你已经在这里打过卡啦！');
+      return;
+    }
+    const updated = { ...profile, checkIns: [placeId, ...currentCheckIns] };
+    saveProfile(updated);
+    toast.success('打卡成功！你离吃遍长沙又近了一步！', { icon: '📍' });
+    addPoints(5, '实地打卡');
+  };
+
+  const completeGuide = () => {
+    if (!profile) return;
+    const updated = { ...profile, hasSeenGuide: true };
+    saveProfile(updated);
+  };
+
   const addPoints = (pts: number, reason: string) => {
     if (!profile) return;
     const updated = { ...profile, points: profile.points + pts };
@@ -118,7 +167,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <UserContext.Provider value={{ currentUser, profile, login, logout, toggleFavorite, toggleLike, addPoints }}>
+    <UserContext.Provider value={{ currentUser, profile, login, logout, toggleFavorite, toggleLike, addHistory, addCheckIn, completeGuide, addPoints }}>
       {children}
     </UserContext.Provider>
   );

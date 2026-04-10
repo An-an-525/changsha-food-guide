@@ -1,8 +1,9 @@
 import { motion } from 'framer-motion';
 import { mockItinerary, getMergedPlaces } from '../data/mockData';
-import { Link } from 'react-router-dom';
-import { Clock, MapPin, ArrowRight, User } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Clock, MapPin, ArrowRight, User, Sparkles, Download } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
+import toast from 'react-hot-toast';
 
 const heroVariants = {
   hidden: { opacity: 0, y: 30 },
@@ -25,6 +26,20 @@ export function Home() {
   const saturdayItinerary = mockItinerary.filter(i => i.day === 'Day 1');
   const sundayItinerary = mockItinerary.filter(i => i.day === 'Day 2');
   const mockPlaces = getMergedPlaces();
+  const navigate = useNavigate();
+
+  const handleLuckyDraw = () => {
+    const randomIndex = Math.floor(Math.random() * mockPlaces.length);
+    const place = mockPlaces[randomIndex];
+    toast.success(`为你抽取了今日幸运店铺：${place.name}！`, { icon: '🎁', duration: 3000 });
+    setTimeout(() => {
+      navigate(`/restaurant/${place.id}`);
+    }, 1000);
+  };
+
+  const handleExport = () => {
+    toast.success('行程单生成中... (已模拟导出为 PDF)', { icon: '📄' });
+  };
 
   return (
     <div className="flex flex-col bg-cream">
@@ -85,7 +100,7 @@ export function Home() {
 
       {/* Timeline Section */}
       <section id="timeline" className="py-24 md:py-32 px-4 md:px-8 max-w-6xl mx-auto w-full">
-        <div className="text-center mb-20">
+        <div className="text-center mb-20 relative">
           <motion.h2 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -99,10 +114,23 @@ export function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-stone-500 text-sm md:text-base uppercase tracking-[0.2em]"
+            className="text-stone-500 text-sm md:text-base uppercase tracking-[0.2em] mb-8"
           >
             Curated 48-Hour Itinerary
           </motion.p>
+          <motion.div 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="flex items-center justify-center gap-4"
+          >
+            <button onClick={handleLuckyDraw} className="px-6 py-2.5 bg-gradient-to-r from-amber-400 to-orange-500 text-dark text-sm font-bold shadow-md hover:scale-105 transition-transform flex items-center gap-2 rounded-full">
+              <Sparkles className="w-4 h-4" /> 今日盲盒打卡
+            </button>
+            <button onClick={handleExport} className="px-6 py-2.5 bg-white border border-stone-200 text-stone-600 text-sm font-medium shadow-sm hover:bg-stone-50 transition-colors flex items-center gap-2 rounded-full">
+              <Download className="w-4 h-4" /> 导出本行程
+            </button>
+          </motion.div>
         </div>
 
         <div className="space-y-32">
