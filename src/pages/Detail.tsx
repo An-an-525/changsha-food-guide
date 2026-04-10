@@ -57,22 +57,27 @@ export function Detail() {
         <title>{place.name} - 安的长沙探店</title>
         <meta name="description" content={`${place.name}是长沙${place.location.area}的一家${place.category}，由${place.author}实地调研推荐。`} />
       </Helmet>
-      {/* Hero Header */}
-      <div className="relative h-[50vh] md:h-[60vh] w-full bg-dark">
-        <img 
-          src={place.images[0]} 
-          alt={place.name}
-          className="w-full h-full object-cover opacity-50"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-cream via-transparent to-transparent"></div>
+      {/* Hero Gallery */}
+      <div className="relative h-[40vh] md:h-[50vh] w-full bg-dark overflow-hidden flex">
+        {place.images.slice(0, 4).map((img, idx) => (
+          <div key={idx} className={clsx("relative h-full", place.images.length === 1 ? "w-full" : "w-1/2 md:w-1/4 border-r border-dark/20")}>
+            <img 
+              src={img} 
+              alt={`${place.name} - ${idx}`}
+              className="w-full h-full object-cover opacity-70 hover:opacity-100 transition-opacity duration-500 cursor-pointer"
+              onClick={() => handleMockAction('高清画廊(Lightbox)正在加载...', '🖼️')}
+            />
+          </div>
+        ))}
+        <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/20 to-transparent pointer-events-none"></div>
         
-        <div className="absolute bottom-0 left-0 right-0 p-6 md:p-12 max-w-6xl mx-auto">
-          <Link to="/" className="inline-flex items-center gap-2 text-dark bg-white/80 backdrop-blur px-5 py-2.5 text-sm mb-8 hover:bg-white hover:shadow-md transition-all cursor-pointer font-bold tracking-widest uppercase">
+        <div className="absolute bottom-0 left-0 right-0 p-6 md:p-12 max-w-6xl mx-auto pointer-events-none">
+          <Link to="/" className="inline-flex items-center gap-2 text-dark bg-white/80 backdrop-blur px-5 py-2.5 text-sm mb-8 hover:bg-white hover:shadow-md transition-all cursor-pointer font-bold tracking-widest uppercase pointer-events-auto">
             <ArrowLeft className="w-4 h-4" /> 返回
           </Link>
           
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div>
+            <div className="pointer-events-auto">
               <div className="flex flex-wrap items-center gap-3 mb-3">
                 <span className="bg-xiang-red text-white text-xs px-3 py-1.5 tracking-wider uppercase shadow-sm">
                   {place.category}
@@ -86,22 +91,22 @@ export function Detail() {
                   </span>
                 )}
               </div>
-              <h1 className="text-4xl md:text-6xl font-serif text-dark mb-4 drop-shadow-md">
+              <h1 className="text-4xl md:text-6xl font-serif text-white mb-4 drop-shadow-lg">
                 {place.name}
               </h1>
               
-              <div className="flex flex-wrap items-center gap-4 text-stone-800 text-sm md:text-base font-medium bg-white/70 backdrop-blur inline-flex px-4 py-2">
+              <div className="flex flex-wrap items-center gap-4 text-stone-200 text-sm md:text-base font-medium bg-dark/40 backdrop-blur inline-flex px-4 py-2 border border-white/10 rounded-sm">
                 <span className="flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-xiang-red" />
                   {place.location.address} ({place.location.area})
                 </span>
-                <span className="w-1 h-1 bg-stone-400 rounded-full"></span>
+                <span className="w-1 h-1 bg-stone-500 rounded-full"></span>
                 <span className="flex items-center gap-1.5">
-                  <User className="w-4 h-4 text-stone-600" />
-                  发布人: <span className="font-bold text-dark">{place.author}</span>
+                  <User className="w-4 h-4 text-stone-300" />
+                  发布人: <span className="font-bold text-white">{place.author}</span>
                 </span>
-                <span className="w-1 h-1 bg-stone-400 rounded-full"></span>
-                <span className="flex items-center gap-1.5 text-stone-600">
+                <span className="w-1 h-1 bg-stone-500 rounded-full"></span>
+                <span className="flex items-center gap-1.5 text-stone-300">
                   <Calendar className="w-4 h-4" />
                   {place.publishDate}
                 </span>
@@ -116,36 +121,99 @@ export function Detail() {
         <div className="lg:col-span-2 space-y-12">
           
           {/* Scores Overview */}
-          <section className="flex gap-6 border-y border-stone-200 py-6">
-             <div className="flex flex-col items-center flex-1 border-r border-stone-200">
-               <span className="text-stone-500 text-xs tracking-widest uppercase mb-2 flex items-center gap-1"><Flame className="w-3 h-3"/> 综合热度</span>
-               <span className="text-3xl font-serif text-dark">{place.popularity}<span className="text-sm text-stone-400 ml-1">/100</span></span>
-             </div>
-             <div className="flex flex-col items-center flex-1 border-r border-stone-200">
-               <span className="text-stone-500 text-xs tracking-widest uppercase mb-2 flex items-center gap-1"><TrendingUp className="w-3 h-3"/> 性价比指数</span>
-               <span className="text-3xl font-serif text-dark">{place.costPerformance.toFixed(1)}<span className="text-sm text-stone-400 ml-1">/5.0</span></span>
-             </div>
-             <div className="flex items-center justify-center flex-1 gap-4">
-               <button onClick={() => toggleLike(place.id)} className="flex flex-col items-center group">
-                 <div className={twMerge(clsx("p-3 rounded-full mb-1 transition-colors", isLiked ? "bg-xiang-red/10 text-xiang-red" : "bg-stone-100 text-stone-500 group-hover:bg-xiang-red/10 group-hover:text-xiang-red"))}>
-                   <Heart className={clsx("w-5 h-5", isLiked && "fill-current")} />
+          <section className="bg-white border border-stone-200 p-6 flex flex-col md:flex-row gap-6 md:gap-12 justify-between">
+             <div className="flex flex-col flex-1">
+               <div className="flex items-end gap-2 mb-2">
+                 <span className="text-4xl font-serif text-xiang-red leading-none">{place.costPerformance.toFixed(1)}</span>
+                 <span className="text-stone-500 text-sm mb-1">综合评分</span>
+               </div>
+               <div className="flex gap-1 mb-4">
+                 {[...Array(5)].map((_, i) => (
+                   <Star key={i} className={clsx("w-4 h-4", i < Math.floor(place.costPerformance) ? "text-xiang-red fill-xiang-red" : "text-stone-200 fill-stone-200")} />
+                 ))}
+               </div>
+               
+               {place.scores && (
+                 <div className="flex gap-4 text-xs text-stone-600 font-medium">
+                   <span>口味: <span className="text-dark">{place.scores.taste.toFixed(1)}</span></span>
+                   <span>环境: <span className="text-dark">{place.scores.environment.toFixed(1)}</span></span>
+                   <span>服务: <span className="text-dark">{place.scores.service.toFixed(1)}</span></span>
                  </div>
-                 <span className={clsx("text-xs font-bold", isLiked ? "text-xiang-red" : "text-stone-500")}>{isLiked ? '已点赞' : '点赞'}</span>
+               )}
+             </div>
+
+             <div className="flex items-center justify-center gap-6 md:border-l md:border-stone-100 md:pl-12 flex-1">
+               <button onClick={() => toggleLike(place.id)} className="flex flex-col items-center group">
+                 <div className={twMerge(clsx("p-4 rounded-full mb-2 transition-colors", isLiked ? "bg-xiang-red/10 text-xiang-red" : "bg-stone-50 text-stone-500 group-hover:bg-xiang-red/10 group-hover:text-xiang-red"))}>
+                   <Heart className={clsx("w-6 h-6", isLiked && "fill-current")} />
+                 </div>
+                 <span className={clsx("text-sm font-bold", isLiked ? "text-xiang-red" : "text-stone-500")}>{isLiked ? '已点赞' : '点赞推荐'}</span>
                </button>
                <button onClick={() => toggleFavorite(place.id)} className="flex flex-col items-center group">
-                 <div className={twMerge(clsx("p-3 rounded-full mb-1 transition-colors", isFavorited ? "bg-amber-100 text-amber-500" : "bg-stone-100 text-stone-500 group-hover:bg-amber-100 group-hover:text-amber-500"))}>
-                   <Bookmark className={clsx("w-5 h-5", isFavorited && "fill-current")} />
+                 <div className={twMerge(clsx("p-4 rounded-full mb-2 transition-colors", isFavorited ? "bg-amber-100 text-amber-500" : "bg-stone-50 text-stone-500 group-hover:bg-amber-100 group-hover:text-amber-500"))}>
+                   <Bookmark className={clsx("w-6 h-6", isFavorited && "fill-current")} />
                  </div>
-                 <span className={clsx("text-xs font-bold", isFavorited ? "text-amber-500" : "text-stone-500")}>{isFavorited ? '已收藏' : '收藏'}</span>
+                 <span className={clsx("text-sm font-bold", isFavorited ? "text-amber-500" : "text-stone-500")}>{isFavorited ? '已收藏' : '加入私藏'}</span>
                </button>
                <button onClick={handleShare} className="flex flex-col items-center group">
-                 <div className="p-3 rounded-full mb-1 bg-stone-100 text-stone-500 group-hover:bg-blue-100 group-hover:text-blue-500 transition-colors">
-                   <Share2 className="w-5 h-5" />
+                 <div className="p-4 rounded-full mb-2 bg-stone-50 text-stone-500 group-hover:bg-blue-100 group-hover:text-blue-500 transition-colors">
+                   <Share2 className="w-6 h-6" />
                  </div>
-                 <span className="text-xs font-bold text-stone-500">分享</span>
+                 <span className="text-sm font-bold text-stone-500">分享好友</span>
                </button>
              </div>
           </section>
+
+          {/* Tags */}
+          {place.tags && place.tags.length > 0 && (
+            <section className="flex flex-wrap gap-2">
+              {place.tags.map((tag, idx) => (
+                <span 
+                  key={idx} 
+                  className={clsx(
+                    "px-3 py-1 text-sm rounded-full border", 
+                    tag.positive ? "bg-emerald-50 text-emerald-700 border-emerald-100" : "bg-stone-100 text-stone-600 border-stone-200"
+                  )}
+                >
+                  {tag.label} {tag.count}
+                </span>
+              ))}
+            </section>
+          )}
+
+          {/* Deals / Group Buy */}
+          {place.deals && place.deals.length > 0 && (
+            <section className="bg-white border border-stone-200 p-6 shadow-sm">
+              <h2 className="text-xl font-serif text-dark mb-4">超值团购套餐</h2>
+              <div className="space-y-4">
+                {place.deals.map(deal => (
+                  <div key={deal.id} className="flex flex-col md:flex-row md:items-center justify-between p-4 border border-stone-100 hover:border-xiang-red/30 transition-colors gap-4">
+                    <div className="flex gap-4 items-center">
+                      <div className="w-16 h-16 bg-stone-100 flex items-center justify-center text-xiang-red font-bold rounded text-lg">
+                        {deal.type === '代金券' ? '券' : '餐'}
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-dark text-lg">{deal.title}</h4>
+                        <p className="text-stone-500 text-sm mt-1">半年内售出 {deal.sold}+</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-6 justify-between md:justify-end">
+                      <div className="text-right">
+                        <div className="text-2xl font-bold text-xiang-red">¥{deal.price}</div>
+                        <div className="text-sm text-stone-400 line-through">¥{deal.originalPrice}</div>
+                      </div>
+                      <button 
+                        onClick={() => handleMockAction('支付接口(模拟)正在调用中...', '💰')}
+                        className="px-6 py-2 bg-xiang-red text-white font-bold hover:bg-xiang-red-dark transition-colors rounded-sm"
+                      >
+                        抢购
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
 
           {/* Utilities Toolbar */}
           <section className="bg-white border border-stone-200 p-4 md:p-6 shadow-sm">
@@ -226,9 +294,21 @@ export function Detail() {
                     className="bg-white p-6 md:p-8 border border-stone-100 shadow-sm"
                   >
                     <div className="flex justify-between items-start mb-6 border-b border-stone-100 pb-4">
-                      <div>
-                        <span className="font-bold text-dark block mb-1">{review.author}</span>
-                        <span className="text-xs text-stone-400 font-mono">{review.date}</span>
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-stone-200 flex items-center justify-center font-bold text-stone-500">
+                          {review.author.charAt(0)}
+                        </div>
+                        <div>
+                          <span className="font-bold text-dark flex items-center gap-2 mb-1">
+                            {review.author}
+                            {review.userLevel && (
+                              <span className="bg-amber-100 text-amber-600 text-[10px] px-1.5 py-0.5 rounded font-bold">
+                                Lv{review.userLevel}
+                              </span>
+                            )}
+                          </span>
+                          <span className="text-xs text-stone-400 font-mono">{review.date}</span>
+                        </div>
                       </div>
                       <div className="flex items-center gap-1 bg-stone-50 px-3 py-1">
                         <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
@@ -255,6 +335,20 @@ export function Detail() {
                       <span className="absolute -top-3 left-4 bg-white px-2 text-xs text-stone-400 font-serif italic border border-stone-100">详细体验</span>
                       {review.content}
                     </div>
+
+                    {review.images && review.images.length > 0 && (
+                      <div className="flex gap-2 mt-4 overflow-x-auto pb-2 scrollbar-hide">
+                        {review.images.map((img, imgIdx) => (
+                          <img 
+                            key={imgIdx} 
+                            src={img} 
+                            alt="Review" 
+                            className="w-24 h-24 object-cover border border-stone-200 flex-shrink-0 hover:opacity-80 cursor-pointer"
+                            onClick={() => handleMockAction('大图模式正在开发中', '🖼️')}
+                          />
+                        ))}
+                      </div>
+                    )}
                   </motion.div>
                 ))}
               </div>

@@ -21,17 +21,22 @@ export interface Place {
   shortReview: { pros: string; cons: string };
   author: string; // UGC author, default is '安'
   publishDate: string;
+  scores?: { taste: number; environment: number; service: number };
+  tags?: { label: string; count: number; positive: boolean }[];
+  deals?: { id: string; title: string; price: number; originalPrice: number; sold: number; type: string }[];
 }
 
 export interface Review {
   id: string;
   restaurantId: string;
   author: string;
+  userLevel?: number;
   date: string;
   rating: number; // 1-5
   pros: string;
   cons: string;
   content: string;
+  images?: string[];
 }
 
 type RawRestaurantData = [string, string, string, string, string, boolean, number, number, string, string];
@@ -157,20 +162,25 @@ const getImageUrl = (category: string, id: string) => {
       'https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&q=60&w=400',
       'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=60&w=400',
       'https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?auto=format&fit=crop&q=60&w=400',
-      'https://images.unsplash.com/photo-1617093727343-374698b1b08d?auto=format&fit=crop&q=60&w=400'
+      'https://images.unsplash.com/photo-1617093727343-374698b1b08d?auto=format&fit=crop&q=60&w=400',
+      'https://images.unsplash.com/photo-1564834724105-918b73d1b9e0?auto=format&fit=crop&q=60&w=400',
+      'https://images.unsplash.com/photo-1625631980722-63e8093d5843?auto=format&fit=crop&q=60&w=400'
     ],
     '粉面': [
       'https://images.unsplash.com/photo-1585032226651-759b368d7246?auto=format&fit=crop&q=60&w=400',
       'https://images.unsplash.com/photo-1552611052-33e04de081de?auto=format&fit=crop&q=60&w=400',
-      'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&q=60&w=400'
+      'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&q=60&w=400',
+      'https://images.unsplash.com/photo-1552611052-33e04de081de?auto=format&fit=crop&q=60&w=400'
     ],
     '夜市/龙虾': [
       'https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&q=60&w=400',
-      'https://images.unsplash.com/photo-1564671165093-20688ff1fffa?auto=format&fit=crop&q=60&w=400'
+      'https://images.unsplash.com/photo-1564671165093-20688ff1fffa?auto=format&fit=crop&q=60&w=400',
+      'https://images.unsplash.com/photo-1626804475297-4160aae01beb?auto=format&fit=crop&q=60&w=400'
     ],
     '夜市/烧烤': [
       'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&q=60&w=400',
-      'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&q=60&w=400'
+      'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&q=60&w=400',
+      'https://images.unsplash.com/photo-1544025162-81111420d4d8?auto=format&fit=crop&q=60&w=400'
     ],
     '烧烤': [
       'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&q=60&w=400',
@@ -179,20 +189,65 @@ const getImageUrl = (category: string, id: string) => {
     '小吃': [
       'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=60&w=400',
       'https://images.unsplash.com/photo-1541592106381-b31e9677c0e5?auto=format&fit=crop&q=60&w=400',
-      'https://images.unsplash.com/photo-1626804475297-4160aae01beb?auto=format&fit=crop&q=60&w=400'
+      'https://images.unsplash.com/photo-1626804475297-4160aae01beb?auto=format&fit=crop&q=60&w=400',
+      'https://images.unsplash.com/photo-1564834724105-918b73d1b9e0?auto=format&fit=crop&q=60&w=400'
     ],
     '饮品': [
       'https://images.unsplash.com/photo-1544145945-f90425340c7e?auto=format&fit=crop&q=60&w=400',
-      'https://images.unsplash.com/photo-1556881286-fc6915169721?auto=format&fit=crop&q=60&w=400'
+      'https://images.unsplash.com/photo-1556881286-fc6915169721?auto=format&fit=crop&q=60&w=400',
+      'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&q=60&w=400'
     ],
     '甜点': [
-      'https://images.unsplash.com/photo-1483695028939-5bb13f8648b0?auto=format&fit=crop&q=60&w=400'
+      'https://images.unsplash.com/photo-1483695028939-5bb13f8648b0?auto=format&fit=crop&q=60&w=400',
+      'https://images.unsplash.com/photo-1550617931-e17a7b70dce2?auto=format&fit=crop&q=60&w=400'
     ]
   };
   const matchedKey = Object.keys(images).find(k => category.includes(k));
   const pool = matchedKey ? images[matchedKey] : images['湘菜'];
   const index = parseInt(id.replace(/\D/g, '')) % pool.length;
   return pool[index];
+};
+
+const getGallery = (category: string, id: string) => {
+  const img1 = getImageUrl(category, id);
+  const img2 = getImageUrl(category, id + '1');
+  const img3 = getImageUrl(category, id + '2');
+  const img4 = getImageUrl(category, id + '3');
+  return Array.from(new Set([img1, img2, img3, img4])); // Deduplicate
+};
+
+const getMockScores = (popularity: number) => {
+  const base = popularity / 20; // 0-5
+  return {
+    taste: Math.min(5, Number((base + Math.random() * 0.5 - 0.2).toFixed(1))),
+    environment: Math.min(5, Number((base + Math.random() * 1.0 - 0.5).toFixed(1))),
+    service: Math.min(5, Number((base + Math.random() * 0.8 - 0.4).toFixed(1)))
+  };
+};
+
+const getMockTags = (category: string, isSpot: boolean) => {
+  if (isSpot) {
+    return [
+      { label: '风景绝佳', count: Math.floor(Math.random() * 500 + 100), positive: true },
+      { label: '必打卡', count: Math.floor(Math.random() * 300 + 50), positive: true },
+      { label: '人太多了', count: Math.floor(Math.random() * 200 + 20), positive: false }
+    ];
+  }
+  return [
+    { label: '味道赞', count: Math.floor(Math.random() * 500 + 100), positive: true },
+    { label: '肉质鲜嫩', count: Math.floor(Math.random() * 300 + 50), positive: true },
+    { label: '回头客多', count: Math.floor(Math.random() * 200 + 50), positive: true },
+    { label: '排队太久', count: Math.floor(Math.random() * 400 + 100), positive: false },
+    { label: '环境一般', count: Math.floor(Math.random() * 100 + 10), positive: false }
+  ];
+};
+
+const getMockDeals = (priceRange: string) => {
+  const basePrice = parseInt(priceRange.replace(/\D/g, '')) || 50;
+  return [
+    { id: uuidv4(), title: '双人特惠招牌套餐', price: Math.floor(basePrice * 1.8), originalPrice: Math.floor(basePrice * 2.5), sold: Math.floor(Math.random() * 5000 + 500), type: '套餐' },
+    { id: uuidv4(), title: '100元代金券', price: 88, originalPrice: 100, sold: Math.floor(Math.random() * 10000 + 1000), type: '代金券' }
+  ];
 };
 
 const getAddress = (area: string, id: string) => {
@@ -236,10 +291,13 @@ export const staticMockPlaces: Place[] = [
     popularity: r[6],
     costPerformance: r[7],
     features: ['人气必吃', r[2], r[5] ? '高性价比' : '品质之选'],
-    images: [getImageUrl(r[2], r[0])],
+    images: getGallery(r[2], r[0]),
     shortReview: { pros: r[8], cons: r[9] },
     author: '安',
-    publishDate: '2023-11-01'
+    publishDate: '2023-11-01',
+    scores: getMockScores(r[6] as number),
+    tags: getMockTags(r[2] as string, false),
+    deals: getMockDeals(r[3] as string)
   })),
   ...rawSpots.map((s) => ({
     id: s[0],
@@ -247,15 +305,18 @@ export const staticMockPlaces: Place[] = [
     type: 'spot' as const,
     category: s[2],
     priceRange: s[3],
-    location: { address: getAddress(s[4], s[0]), area: s[4] },
+    location: { address: getAddress(s[4] as string, s[0] as string), area: s[4] },
     studentFriendly: s[5],
     popularity: s[6],
     costPerformance: s[7],
     features: ['必打卡地标', '风景名胜'],
-    images: ['https://images.unsplash.com/photo-1621262573215-992a00c6d5a1?auto=format&fit=crop&q=60&w=400'],
+    images: getGallery('风景', s[0]),
     shortReview: { pros: s[8], cons: s[9] },
     author: '安',
-    publishDate: '2023-10-15'
+    publishDate: '2023-10-15',
+    scores: getMockScores(s[6] as number),
+    tags: getMockTags(s[2] as string, true),
+    deals: []
   }))
 ];
 
@@ -279,11 +340,13 @@ export const mockReviews: Review[] = staticMockPlaces.map((p, i) => {
     id: `rev${i}`,
     restaurantId: p.id,
     author: `食客${Math.floor(Math.random() * 9000) + 1000}`,
+    userLevel: Math.floor(Math.random() * 8) + 1, // Lv1 - Lv8
     date: '2023-10-15',
     rating: rating,
     pros: p.shortReview.pros,
     cons: p.shortReview.cons,
-    content: `慕名而来打卡${p.name}。优点很明显，${p.shortReview.pros}；但是也有不足之处：${p.shortReview.cons}。整体而言性价比得分为${p.costPerformance}分，大家可以根据自己的需求参考。`
+    content: `慕名而来打卡${p.name}。优点很明显，${p.shortReview.pros}；但是也有不足之处：${p.shortReview.cons}。整体而言性价比得分为${p.costPerformance}分，大家可以根据自己的需求参考。服务态度还可以，环境和卫生也算干净，算是这个价位里不错的选择了！`,
+    images: p.images.slice(0, 2)
   };
 });
 
