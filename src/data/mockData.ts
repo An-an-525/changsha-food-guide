@@ -216,37 +216,41 @@ const getGallery = (category: string, id: string) => {
   return Array.from(new Set([img1, img2, img3, img4])); // Deduplicate
 };
 
-const getMockScores = (popularity: number) => {
+const getMockScores = (popularity: number, id: string) => {
+  const hash = parseInt(id.replace(/\D/g, '')) || 0;
   const base = popularity / 20; // 0-5
+  const offset = (hash % 10) / 10;
   return {
-    taste: Math.min(5, Number((base + Math.random() * 0.5 - 0.2).toFixed(1))),
-    environment: Math.min(5, Number((base + Math.random() * 1.0 - 0.5).toFixed(1))),
-    service: Math.min(5, Number((base + Math.random() * 0.8 - 0.4).toFixed(1)))
+    taste: Math.min(5, Number((base + offset * 0.5 - 0.2).toFixed(1))),
+    environment: Math.min(5, Number((base + offset * 1.0 - 0.5).toFixed(1))),
+    service: Math.min(5, Number((base + offset * 0.8 - 0.4).toFixed(1)))
   };
 };
 
-const getMockTags = (category: string, isSpot: boolean) => {
+const getMockTags = (category: string, isSpot: boolean, id: string) => {
+  const hash = parseInt(id.replace(/\D/g, '')) || 0;
   if (isSpot) {
     return [
-      { label: '风景绝佳', count: Math.floor(Math.random() * 500 + 100), positive: true },
-      { label: '必打卡', count: Math.floor(Math.random() * 300 + 50), positive: true },
-      { label: '人太多了', count: Math.floor(Math.random() * 200 + 20), positive: false }
+      { label: '风景绝佳', count: hash * 3 + 100, positive: true },
+      { label: '必打卡', count: hash * 2 + 50, positive: true },
+      { label: '人太多了', count: hash + 20, positive: false }
     ];
   }
   return [
-    { label: '味道赞', count: Math.floor(Math.random() * 500 + 100), positive: true },
-    { label: '肉质鲜嫩', count: Math.floor(Math.random() * 300 + 50), positive: true },
-    { label: '回头客多', count: Math.floor(Math.random() * 200 + 50), positive: true },
-    { label: '排队太久', count: Math.floor(Math.random() * 400 + 100), positive: false },
-    { label: '环境一般', count: Math.floor(Math.random() * 100 + 10), positive: false }
+    { label: '味道赞', count: hash * 5 + 100, positive: true },
+    { label: '肉质鲜嫩', count: hash * 3 + 50, positive: true },
+    { label: '回头客多', count: hash * 2 + 50, positive: true },
+    { label: '排队太久', count: hash * 4 + 100, positive: false },
+    { label: '环境一般', count: hash + 10, positive: false }
   ];
 };
 
-const getMockDeals = (priceRange: string) => {
+const getMockDeals = (priceRange: string, id: string) => {
   const basePrice = parseInt(priceRange.replace(/\D/g, '')) || 50;
+  const hash = parseInt(id.replace(/\D/g, '')) || 0;
   return [
-    { id: uuidv4(), title: '双人特惠招牌套餐', price: Math.floor(basePrice * 1.8), originalPrice: Math.floor(basePrice * 2.5), sold: Math.floor(Math.random() * 5000 + 500), type: '套餐' },
-    { id: uuidv4(), title: '100元代金券', price: 88, originalPrice: 100, sold: Math.floor(Math.random() * 10000 + 1000), type: '代金券' }
+    { id: uuidv4(), title: '双人特惠招牌套餐', price: Math.floor(basePrice * 1.8), originalPrice: Math.floor(basePrice * 2.5), sold: hash * 50 + 500, type: '套餐' },
+    { id: uuidv4(), title: '100元代金券', price: 88, originalPrice: 100, sold: hash * 100 + 1000, type: '代金券' }
   ];
 };
 
@@ -295,9 +299,9 @@ export const staticMockPlaces: Place[] = [
     shortReview: { pros: r[8], cons: r[9] },
     author: '安',
     publishDate: '2023-11-01',
-    scores: getMockScores(r[6] as number),
-    tags: getMockTags(r[2] as string, false),
-    deals: getMockDeals(r[3] as string)
+    scores: getMockScores(r[6] as number, r[0]),
+    tags: getMockTags(r[2] as string, false, r[0]),
+    deals: getMockDeals(r[3] as string, r[0])
   })),
   ...rawSpots.map((s) => ({
     id: s[0],
@@ -314,8 +318,8 @@ export const staticMockPlaces: Place[] = [
     shortReview: { pros: s[8], cons: s[9] },
     author: '安',
     publishDate: '2023-10-15',
-    scores: getMockScores(s[6] as number),
-    tags: getMockTags(s[2] as string, true),
+    scores: getMockScores(s[6] as number, s[0]),
+    tags: getMockTags(s[2] as string, true, s[0]),
     deals: []
   }))
 ];
@@ -336,11 +340,12 @@ export const getMergedPlaces = (): Place[] => {
 
 export const mockReviews: Review[] = staticMockPlaces.map((p, i) => {
   const rating = p.costPerformance > 4.5 ? 5 : (p.costPerformance > 4.0 ? 4 : 3);
+  const hash = parseInt(p.id.replace(/\D/g, '')) || 0;
   return {
     id: `rev${i}`,
     restaurantId: p.id,
-    author: `食客${Math.floor(Math.random() * 9000) + 1000}`,
-    userLevel: Math.floor(Math.random() * 8) + 1, // Lv1 - Lv8
+    author: `食客${(hash * 17) % 9000 + 1000}`,
+    userLevel: (hash % 8) + 1, // Lv1 - Lv8
     date: '2023-10-15',
     rating: rating,
     pros: p.shortReview.pros,

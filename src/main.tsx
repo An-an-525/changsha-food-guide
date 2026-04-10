@@ -11,6 +11,9 @@ import { Search } from './pages/Search';
 import { Publish } from './pages/Publish';
 import { Profile } from './pages/Profile';
 import { Login } from './pages/Login';
+import { Leaderboard } from './pages/Leaderboard';
+import { Deals } from './pages/Deals';
+import { Recommend } from './pages/Recommend';
 import { UserProvider } from './context/UserContext';
 
 createRoot(document.getElementById('root')!).render(
@@ -26,6 +29,9 @@ createRoot(document.getElementById('root')!).render(
               <Route path="publish" element={<Publish />} />
               <Route path="profile" element={<Profile />} />
               <Route path="login" element={<Login />} />
+              <Route path="leaderboard" element={<Leaderboard />} />
+              <Route path="deals" element={<Deals />} />
+              <Route path="recommend" element={<Recommend />} />
               <Route path="restaurant/:id" element={<Detail />} />
             </Route>
           </Routes>

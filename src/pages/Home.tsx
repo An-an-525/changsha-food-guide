@@ -104,31 +104,31 @@ export function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
-              className="w-full md:w-auto grid grid-cols-4 gap-4 md:gap-8 bg-dark/60 backdrop-blur-md p-4 md:px-8 rounded-xl border border-white/10 shadow-xl"
+              className="w-full md:w-auto grid grid-cols-4 md:grid-cols-2 gap-3 md:gap-4 bg-dark/60 backdrop-blur-md p-4 md:px-8 rounded-xl border border-white/10 shadow-xl"
             >
-              <button onClick={() => navigate('/search')} className="flex flex-col items-center gap-2 group">
+              <button onClick={() => navigate('/leaderboard')} className="flex flex-col items-center gap-2 group">
                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center text-white shadow-lg group-hover:scale-105 transition-transform">
                   <Trophy className="w-5 h-5" />
                 </div>
                 <span className="text-xs md:text-sm text-cream font-medium whitespace-nowrap">必吃榜单</span>
               </button>
-              <button onClick={() => toast('正在加载附近团购优惠...', { icon: '🎟️' })} className="flex flex-col items-center gap-2 group">
+              <button onClick={() => navigate('/deals')} className="flex flex-col items-center gap-2 group">
                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center text-white shadow-lg group-hover:scale-105 transition-transform">
                   <Ticket className="w-5 h-5" />
                 </div>
                 <span className="text-xs md:text-sm text-cream font-medium whitespace-nowrap">找优惠</span>
+              </button>
+              <button onClick={() => navigate('/recommend')} className="flex flex-col items-center gap-2 group">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white shadow-lg group-hover:scale-105 transition-transform">
+                  <Sparkles className="w-5 h-5" />
+                </div>
+                <span className="text-xs md:text-sm text-cream font-medium whitespace-nowrap">AI 推荐</span>
               </button>
               <button onClick={() => navigate('/map')} className="flex flex-col items-center gap-2 group">
                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white shadow-lg group-hover:scale-105 transition-transform">
                   <Map className="w-5 h-5" />
                 </div>
                 <span className="text-xs md:text-sm text-cream font-medium whitespace-nowrap">周边游</span>
-              </button>
-              <button onClick={() => navigate('/publish')} className="flex flex-col items-center gap-2 group">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white shadow-lg group-hover:scale-105 transition-transform">
-                  <Camera className="w-5 h-5" />
-                </div>
-                <span className="text-xs md:text-sm text-cream font-medium whitespace-nowrap">写评价</span>
               </button>
             </motion.div>
           </div>
