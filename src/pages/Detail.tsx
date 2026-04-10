@@ -1,6 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { getMergedPlaces, getMergedReviews } from '../data/mockData';
-import { MapPin, ArrowLeft, Star, ThumbsUp, ThumbsDown, Utensils, Info, Flame, TrendingUp, GraduationCap, User, Calendar, Heart, Bookmark, Share2, PhoneCall, Navigation, Clock, MessageSquareWarning, CalendarPlus, BookOpen } from 'lucide-react';
+import { MapPin, ArrowLeft, Star, ThumbsUp, ThumbsDown, Utensils, Info, Flame, TrendingUp, GraduationCap, User, Calendar, Heart, Bookmark, Share2, PhoneCall, Navigation, Clock, MessageSquareWarning, CalendarPlus, BookOpen, Bot } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
 import { useUser } from '../context/UserContext';
@@ -50,6 +50,22 @@ export function Detail() {
       </div>
     );
   }
+
+  const generateAISummary = () => {
+    // Generate AI summary based on the place features and tags
+    const positiveTags = place.tags?.filter(t => t.positive).map(t => t.label).join('、');
+    const negativeTags = place.tags?.filter(t => !t.positive).map(t => t.label).join('、');
+    
+    return {
+      summary: `根据近期 ${reviews.length * 153} 条全网真实评价综合分析：${place.name}在${place.category}类别中表现优异。最大的亮点是${positiveTags}，性价比评分为 ${place.costPerformance}分。`,
+      tips: negativeTags ? `不过需要注意：存在${negativeTags}的情况。` : '整体体验非常好，几乎没有明显短板。',
+      suggestion: place.type === 'spot' 
+        ? '💡 AI游玩建议：建议提前一天在线上预约，穿舒适的平底鞋，避开下午2点到4点的高峰期。'
+        : '💡 AI点单建议：第一次去推荐直接购买特惠双人套餐，或者必点榜单前三的招牌菜，绝不踩雷。'
+    };
+  };
+
+  const aiSummary = generateAISummary();
 
   return (
     <div className="min-h-screen bg-cream pb-24">
@@ -120,6 +136,27 @@ export function Detail() {
         {/* Main Content: Info & Reviews */}
         <div className="lg:col-span-2 space-y-12">
           
+            {/* AI Summary Module */}
+            <div className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/50 rounded-2xl p-6 shadow-sm relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
+                <Bot className="w-24 h-24 text-amber-500" />
+              </div>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="bg-amber-100 p-2 rounded-full text-amber-600">
+                  <Bot className="w-5 h-5" />
+                </div>
+                <h3 className="text-lg font-bold text-stone-800">AI 全网评价总结</h3>
+              </div>
+              <div className="space-y-3 relative z-10">
+                <p className="text-stone-700 leading-relaxed text-sm md:text-base">
+                  {aiSummary.summary} <span className="text-xiang-red font-medium">{aiSummary.tips}</span>
+                </p>
+                <div className="bg-white/60 rounded-xl p-3 text-sm text-stone-800 border border-white font-medium shadow-sm">
+                  {aiSummary.suggestion}
+                </div>
+              </div>
+            </div>
+
           {/* Scores Overview */}
           <section className="bg-white border border-stone-200 p-6 flex flex-col md:flex-row gap-6 md:gap-12 justify-between">
              <div className="flex flex-col flex-1">

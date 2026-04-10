@@ -4,6 +4,7 @@ import { Navbar } from './Navbar';
 import { Footer } from './Footer';
 import { OnboardingGuide } from './OnboardingGuide';
 import { MobileTabBar } from './MobileTabBar';
+import { AIAssistant } from './AIAssistant';
 import { ArrowUp, MessageCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -47,6 +48,7 @@ export function Layout() {
       <Footer />
       <OnboardingGuide />
       <MobileTabBar />
+      <AIAssistant />
 
       {/* Floating Action Buttons (Hidden on mobile to prevent overlap with TabBar) */}
       <div className="fixed bottom-8 right-6 z-50 hidden md:flex flex-col gap-3">
